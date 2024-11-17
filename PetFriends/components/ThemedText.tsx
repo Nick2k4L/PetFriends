@@ -11,8 +11,8 @@ export type ThemedTextProps = TextProps & {
 export function ThemedText({
   style,
   lightColor,
-  darkColor,
   type = 'default',
+  darkColor="#000000",
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
@@ -20,13 +20,13 @@ export function ThemedText({
   return (
     <Text
       style={[
-        { color },
-        type === 'default' ? styles.default : undefined,
-        type === 'title' ? styles.title : undefined,
-        type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-        type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
+        type === 'default' && styles.default,
+        type === 'title' && styles.title,
+        type === 'defaultSemiBold' && styles.defaultSemiBold,
+        type === 'subtitle' && styles.subtitle,
+        type === 'link' && styles.link,
         style,
+        { color, backgroundColor: 'transparent' }, // Moved after 'style'
       ]}
       {...rest}
     />
@@ -53,8 +53,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   link: {
-    lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
+    lineHeight: 30,
   },
 });
