@@ -1,70 +1,87 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
+import { Image, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+    <ParallaxScrollView backgroundColor="#FFFFFF">
+      <ThemedView style={styles.bannerContainer} transparent>
+        <Image source={require('@/assets/images/pet-banner.jpg')} style={styles.bannerImage} />
+        <View style={styles.overlay}>
+          <ThemedText type="title" style={styles.welcomeText} darkColor="#000000">
+            Pet Friends
+          </ThemedText>
+        </View>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+      <ThemedView style={styles.buttonContainer} transparent>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="paw" size={24} color="#fff" />
+          <ThemedText style={styles.buttonText}>Start Matching</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="person" size={24} color="#fff" />
+          <ThemedText style={styles.buttonText}>View Profile</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="people" size={24} color="#fff" />
+          <ThemedText style={styles.buttonText}>Add Friends</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="map" size={24} color="#fff" />
+          <ThemedText style={styles.buttonText}>Search Nearby</ThemedText>
+        </TouchableOpacity>
       </ThemedView>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  bannerContainer: {
+    position: 'relative', // Enable absolute positioning within this container
+    width: '100%',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  bannerImage: {
+    width: '120%',
+    marginLeft: '-10%',
+    top: -33,
+    height: 200,
+    resizeMode: 'cover',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
+  overlay: {
+    position: 'absolute', // Position the overlay absolutely over the banner image
+    top: 0,
     left: 0,
-    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center', // Center the content vertically
+    alignItems: 'center',    // Center the content horizontally
+    marginTop: 30,
+    borderColor: 'black',
+    borderRadius: 10,
+    height: '30%',
+  },
+  welcomeText: {
+    fontSize: 30,
+    color: '#FFFFFF', // Ensure the text is visible over the image
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    gap: 12,
+    marginTop: -7,
+  },
+  button: {
+    flexDirection: 'row',
+    backgroundColor: '#0a7ea4',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  buttonText: {
+    color: '#fff',
+    marginLeft: 12,
+    fontSize: 18,
   },
 });
