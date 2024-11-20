@@ -3,6 +3,7 @@ import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-n
 import { loginWithEmail, signUpWithEmail } from './firebaseAuth';
 import { useNavigation } from '@react-navigation/native';
 
+
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,7 +12,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await loginWithEmail(email, password);
-      navigation.navigate('PetManagement');
+      navigation.navigate('Home');
     } catch (error) {
       Alert.alert('Login Error', error.message);
     }

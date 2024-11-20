@@ -7,11 +7,12 @@ const Stack = createStackNavigator();
 
 export default function TabLayout() {
   return (
-    <Stack.Navigator initialRouteName="Home" screenOptions={{
+    <Stack.Navigator initialRouteName="Login" screenOptions={{
       headerShown: false
     }}>
-      <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Home" component={Home} />
+
       <Stack.Screen name="PetManagement" component={PetManagementScreen} />
       <Stack.Screen name="DogSwiper" component={Siper} />
     </Stack.Navigator>

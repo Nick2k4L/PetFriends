@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView backgroundColor="#FFFFFF">
+    <ParallaxScrollView backgroundColor="#b7d0cd">
       <ThemedView style={styles.bannerContainer} transparent>
         <Image source={require('@/assets/images/pet-banner.jpg')} style={styles.bannerImage} />
         <View style={styles.overlay}>
