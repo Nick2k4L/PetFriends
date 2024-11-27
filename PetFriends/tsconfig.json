@@ -1,7 +1,6 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "jsx": "react-jsx", // For React 17+ with the new JSX transform
+    "jsx": "react-jsx",
     "strict": true,
     "paths": {
       "@/*": [
@@ -13,8 +12,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "assets/utilities/firebaseAuth.ts"  ]
-
-  
+    "expo-env.d.ts",
+    "assets/utilities/firebaseAuth.ts"
+  ],
+  "extends": "expo/tsconfig.base"
 }

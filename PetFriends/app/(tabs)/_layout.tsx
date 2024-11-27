@@ -1,5 +1,4 @@
 import { StyleSheet, SafeAreaView, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -39,7 +38,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Swiper"
         options={{
-          title: 'Swiper',
   
           tabBarIcon: ({ color }) => (
 
@@ -70,6 +68,16 @@ export default function TabLayout() {
         name="Profile"
         options={{
           title: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={32} color={color}/>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="PetManagementScreen"
+        options={{
+          title: 'PetManagementScreen',
+          href: '',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={32} color={color}/>
           ),

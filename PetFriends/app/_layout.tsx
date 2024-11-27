@@ -1,16 +1,12 @@
-import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './auth/LoginScreen';
-import TabLayout from './(tabs)/_layout';
+import { Stack } from 'expo-router';
 
-const Stack = createStackNavigator();
-
-export default function Layout() {
+const StackLayout = () => {
   return (
-    <Stack.Navigator initialRouteName="Login" screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="(tabs)" component={TabLayout} />
-    </Stack.Navigator>
-  );
+    <Stack>
+      <Stack.Screen name="auth/LoginScreen" />
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+  )
 }
+
+export default StackLayout;
