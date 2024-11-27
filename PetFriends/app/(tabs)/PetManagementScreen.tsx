@@ -88,7 +88,7 @@ export default function PetManagementScreen() {
       />
        <TextInput
         style={styles.input}
-        placeholder="Age"
+        placeholder="Age (e.g., years old)"
         placeholderTextColor="black"
         value={petAge}
         onChangeText={setPetAge}
@@ -122,7 +122,9 @@ export default function PetManagementScreen() {
         )}
       />
       {/* Navigate to Pet Swiper */}
-      <Button title="Done? Click here!" onPress={() => navigation.navigate('Home')} />
+      {pets.length > 0 && (
+          <Button title="Done? Click here!" onPress={() => navigation.navigate('Home')} />
+      )}
     </View>
   );
 }

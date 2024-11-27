@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { loginWithEmail, signUpWithEmail } from './firebaseAuth';
 import { useNavigation } from '@react-navigation/native';
-
+import Home from './index';
+import PetManagementScreen from './PetManagementScreen';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       {/* Logo */}
-      <Image source={require('../assets/PF.jpg')} style={styles.logo} />
+      <Image source={require('../../assets/PF.jpg')} style={styles.logo} />
 
       {/* Login Form */}
       <Text style={styles.title}>Welcome </Text>
@@ -82,6 +83,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     textDecorationColor: '#000000',
-    
+  
   }
 });
