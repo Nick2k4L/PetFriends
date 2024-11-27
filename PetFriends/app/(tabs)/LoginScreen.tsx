@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { loginWithEmail, signUpWithEmail } from './firebaseAuth';
 import { useNavigation } from '@react-navigation/native';
-import Home from './index';
-import PetManagementScreen from './PetManagementScreen';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
