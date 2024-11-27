@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, Button, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function Profile() {
+export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>

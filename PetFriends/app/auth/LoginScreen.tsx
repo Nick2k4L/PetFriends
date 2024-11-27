@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
-import { loginWithEmail, signUpWithEmail } from '../utilities/firebaseAuth';
+import { loginWithEmail, signUpWithEmail } from '../../utilities/firebaseAuth';
 import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen() {
@@ -11,7 +11,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await loginWithEmail(email, password);
-      navigation.navigate('Home');
+      navigation.navigate('(tabs)');
     } catch (error) {
       Alert.alert('Login Error', (error as Error).message);
     }
@@ -29,7 +29,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       {/* Logo */}
-      <Image source={require('../assets/PF.jpg')} style={styles.logo} />
+      <Image source={require('../../assets/PF.jpg')} style={styles.logo} />
 
       {/* Login Form */}
       <Text style={styles.title}>Welcome </Text>
