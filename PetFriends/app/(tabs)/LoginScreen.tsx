@@ -50,6 +50,7 @@ export default function LoginScreen() {
       />
       <Button title="Login" onPress={handleLogin} />
       <Button title="Sign Up" onPress={handleSignUp} />
+      <Text style={styles.forgotPassword}>Forgot Password?</Text>
     </View>
   );
 }
@@ -82,5 +83,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textDecorationColor: '#000000',
   
-  }
+  },
+  forgotPassword: {
+    marginTop: 10,
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
 });
