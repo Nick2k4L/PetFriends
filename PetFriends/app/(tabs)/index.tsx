@@ -2,6 +2,7 @@ import { StyleSheet, SafeAreaView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Tabs } from 'expo-router';
 
 export default function HomeScreen() {
@@ -37,7 +38,7 @@ export default function HomeScreen() {
         tabBarInactiveTintColor: '#757575',
       }}>
       <Tabs.Screen
-        name="index"
+        name="Swiper"
         options={{
           title: 'Home',
           tabBarLabel: '',
@@ -49,29 +50,29 @@ export default function HomeScreen() {
         }}
       />
       <Tabs.Screen
-        name="PetManagement"
+        name="Map"
         options={{
-          title: 'Pets',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="paw" size={32} color={color} />
+          title: 'Map',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="map-marker-alt" size={32} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="DogSwiper"
+        name="Messages"
         options={{
-          title: 'Match',
+          title: 'Messages',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart" size={32} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="Login"
+        name="Profile"
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={32}/>
+            <Ionicons name="person" size={32} color={color}/>
           ),
         }}
       />

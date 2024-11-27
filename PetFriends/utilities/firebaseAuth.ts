@@ -79,6 +79,7 @@ export const fetchAllPets = async () => {
       {
         id: "1",
         name: "Buddy",
+        age: "1 year",
         breed: "Golden Retriever",
         weight: "25lbs",
         image: "https://dogtime.com/wp-content/uploads/sites/12/2024/03/GettyImages-1285465107-e1710251441662.jpg",
@@ -86,6 +87,7 @@ export const fetchAllPets = async () => {
       {
         id: "2",
         name: "Max",
+        age: "2 years",
         breed: "Labrador",
         weight: "30lbs",
         image: "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGFicmFkb3IlMjByZXRyaWV2ZXJ8ZW58MHx8MHx8fDA%3D",
@@ -93,6 +95,7 @@ export const fetchAllPets = async () => {
       {
         id: "3",
         name: "Pluto",
+        age: "6 months",
         breed: "Black Labrador",
         weight: "35lbs",
         image: "https://media.discordapp.net/attachments/1231112157144289320/1307614872967843890/image.jpg?ex=673af2c0&is=6739a140&hm=533f3f7d9795d001f108fc90051cbb3ed22f7a5b75849151ca2ccf723152b2ea&=&width=762&height=1196",

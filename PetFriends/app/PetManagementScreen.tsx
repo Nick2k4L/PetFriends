@@ -10,15 +10,25 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { savePet, fetchPets, uploadPetImage } from './firebaseAuth';
+import { savePet, fetchPets, uploadPetImage } from '../utilities/firebaseAuth';
 import { getAuth } from 'firebase/auth';
+import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 
 export default function PetManagementScreen() {
   const [petName, setPetName] = useState('');
   const [petBreed, setPetBreed] = useState('');
+  const [petAge, setPetAge] = useState('');
   const [petWeight, setPetWeight] = useState('');
-  const [petImage, setPetImage] = useState('');
-  const [pets, setPets] = useState([]);
+  const [petImage, setPetImage] = useState<string | undefined>(undefined);
+  interface Pet {
+    id: string;
+    name?: string;
+    age?: string;
+    breed?: string;
+    weight?: string;
+    image?: string;
+  }
+  const [pets, setPets] = useState<Pet[]>([]);
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const navigation = useNavigation();
@@ -31,40 +41,54 @@ export default function PetManagementScreen() {
     }
   }, [userId]);
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+  const pickImage = () => {
+    const options: ImageLibraryOptions = {
+      mediaType: 'photo',
       quality: 1,
+    };
+    
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorMessage) {
+        Alert.alert('ImagePicker Error: ', response.errorMessage);
+      } else if (response.assets && response.assets.length > 0) {
+        const uri = response.assets[0].uri;
+        setPetImage(uri);
+      }
     });
-
-    if (!result.canceled) {
-      setPetImage(result.uri);
-    }
   };
 
   const addPet = async () => {
-    if (!petName || !petBreed || !petWeight) {
+    if (!userId) {
+      Alert.alert('Error', 'User not authenticated.');
+      return;
+    }
+    if (!petName || !petBreed || !petAge || !petWeight) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-
+  
     try {
-      let imageUrl = null;
+      let imageUrl: string | undefined = undefined;
       if (petImage) {
         imageUrl = await uploadPetImage(userId, petImage);
       }
-      const petData = { name: petName, breed: petBreed, weight: petWeight, image: imageUrl };
+      const petData = { id: userId, name: petName, age: petAge, breed: petBreed, weight: petWeight, image: imageUrl };
       await savePet(userId, petData);
       setPets([...pets, petData]);
       setPetName('');
+      setPetAge('');
       setPetBreed('');
       setPetWeight('');
       setPetImage('');
       Alert.alert('Success', 'Pet added successfully!');
     } catch (error) {
-      Alert.alert('Error', error.message);
+      if (error instanceof Error) {
+        Alert.alert('Error', error.message);
+      } else {
+        Alert.alert('Error', 'An unexpected error occurred.');
+      }
     }
   };
 
@@ -76,6 +100,12 @@ export default function PetManagementScreen() {
         placeholder="Pet Name"
         value={petName}
         onChangeText={setPetName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Age"
+        value={petAge}
+        onChangeText={setPetAge}
       />
       <TextInput
         style={styles.input}
@@ -108,8 +138,6 @@ export default function PetManagementScreen() {
           </View>
         )}
       />
-      {/* Navigate to Dog Swiper */}
-      <Button title="Go to Dog Swiper" onPress={() => navigation.navigate('DogSwiper')} />
     </View>
   );
 }
