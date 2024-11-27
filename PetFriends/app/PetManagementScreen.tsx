@@ -16,6 +16,7 @@ import { getAuth } from 'firebase/auth';
 export default function PetManagementScreen() {
   const [petName, setPetName] = useState('');
   const [petBreed, setPetBreed] = useState('');
+  const [petAge, setPetAge] = useState('');
   const [petWeight, setPetWeight] = useState('');
   const [petImage, setPetImage] = useState('');
   const [pets, setPets] = useState([]);
@@ -45,7 +46,7 @@ export default function PetManagementScreen() {
   };
 
   const addPet = async () => {
-    if (!petName || !petBreed || !petWeight) {
+    if (!petName || !petBreed || !petAge || !petWeight) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
@@ -55,7 +56,7 @@ export default function PetManagementScreen() {
       if (petImage) {
         imageUrl = await uploadPetImage(userId, petImage);
       }
-      const petData = { name: petName, breed: petBreed, weight: petWeight, image: imageUrl };
+      const petData = { name: petName, breed: petBreed, age: petAge, weight: petWeight, image: imageUrl };
       await savePet(userId, petData);
       setPets([...pets, petData]);
       setPetName('');
@@ -74,18 +75,29 @@ export default function PetManagementScreen() {
       <TextInput
         style={styles.input}
         placeholder="Pet Name"
+        placeholderTextColor="black"
         value={petName}
         onChangeText={setPetName}
       />
       <TextInput
         style={styles.input}
         placeholder="Breed"
+        placeholderTextColor="black"
         value={petBreed}
         onChangeText={setPetBreed}
       />
+       <TextInput
+        style={styles.input}
+        placeholder="Age"
+        placeholderTextColor="black"
+        value={petAge}
+        onChangeText={setPetAge}
+        keyboardType="numeric"
+      />
       <TextInput
         style={styles.input}
-        placeholder="Weight (e.g., 10kg)"
+        placeholder="Weight (e.g., 10 pounds)"
+        placeholderTextColor="black"
         value={petWeight}
         onChangeText={setPetWeight}
         keyboardType="numeric"
@@ -103,13 +115,14 @@ export default function PetManagementScreen() {
             <View>
               <Text>Name: {item.name}</Text>
               <Text>Breed: {item.breed}</Text>
-              <Text>Weight: {item.weight}</Text>
+              <Text>Age: {item.age + " Years Old"}</Text>
+              <Text>Weight: {item.weight + " Pounds"}</Text>
             </View>
           </View>
         )}
       />
-      {/* Navigate to Dog Swiper */}
-      <Button title="Go to Dog Swiper" onPress={() => navigation.navigate('DogSwiper')} />
+      {/* Navigate to Pet Swiper */}
+      <Button title="Done? Click here!" onPress={() => navigation.navigate('Home')} />
     </View>
   );
 }
@@ -118,6 +131,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#ccc',
   },
   title: {
     fontSize: 24,
@@ -125,7 +139,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'black',
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
