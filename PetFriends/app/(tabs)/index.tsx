@@ -3,9 +3,12 @@ import { Ionicons } from '@expo/vector-icons';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   return (
+    
     <ParallaxScrollView backgroundColor="#b7d0cd">
       <ThemedView style={styles.bannerContainer} transparent>
         <Image source={require('@/assets/images/pet-banner.jpg')} style={styles.bannerImage} />
@@ -16,19 +19,20 @@ export default function HomeScreen() {
         </View>
       </ThemedView>
       <ThemedView style={styles.buttonContainer} transparent>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('DogSwiper')}>
           <Ionicons name="paw" size={24} color="#fff" />
           <ThemedText style={styles.buttonText}>Start Matching</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PetManagement')}>
           <Ionicons name="person" size={24} color="#fff" />
           <ThemedText style={styles.buttonText}>View Profile</ThemedText>
+          
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PetManagement')}>
           <Ionicons name="people" size={24} color="#fff" />
           <ThemedText style={styles.buttonText}>Add Friends</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Map')}>
           <Ionicons name="map" size={24} color="#fff" />
           <ThemedText style={styles.buttonText}>Search Nearby</ThemedText>
         </TouchableOpacity>
