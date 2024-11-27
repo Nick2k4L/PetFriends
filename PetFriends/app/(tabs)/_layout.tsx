@@ -2,12 +2,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './LoginScreen';
 import PetManagementScreen from './PetManagementScreen';
 import Swiper from './Swiper';
-import HomeScreen from './index'
+import Home from './index'
+import MapView from './MapView'
 const Stack = createStackNavigator();
 
 export default function TabLayout() {
   return (
-    <Stack.Navigator initialRouteName="Home" screenOptions={{
+    <Stack.Navigator initialRouteName="Login" screenOptions={{
       headerShown: false
     }}>
       <Stack.Screen name="Login" component={LoginScreen} />
@@ -15,6 +16,7 @@ export default function TabLayout() {
 
       <Stack.Screen name="PetManagement" component={PetManagementScreen} />
       <Stack.Screen name="DogSwiper" component={Swiper} />
+      <Stack.Screen name="Map" component={MapView} />
     </Stack.Navigator>
   );
 }
