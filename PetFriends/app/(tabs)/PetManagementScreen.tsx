@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { savePet, fetchPets, uploadPetImage } from './firebaseAuth';
 import { getAuth } from 'firebase/auth';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function PetManagementScreen() {
   const [petName, setPetName] = useState('');
@@ -41,7 +42,7 @@ export default function PetManagementScreen() {
     });
 
     if (!result.canceled) {
-      setPetImage(result.uri);
+      setPetImage(result.assets[0].uri);
     }
   };
 

@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBKRE3nu2VmQMD360N-sARfH4qwFMQHADM",
   authDomain: "petfriends-f4e4f.firebaseapp.com",
   projectId: "petfriends-f4e4f",
-  storageBucket: "fir-auth-4d646.appspot.com",
+  storageBucket: "gs://petfriends-f4e4f.firebasestorage.app",
   messagingSenderId: "83001307905",
   appId: "1:271333370479:ios:350d0d2a53915bbde5bb9a",
 };
