@@ -60,6 +60,7 @@ export default function LoginScreen() {
         onChangeText={setEmail}
         autoComplete='email'
         placeholderTextColor={"#0a0a0a"}
+        inputMode='email'
         onSubmitEditing={()=>passwordRef.current.focus()}
         
       />
