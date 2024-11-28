@@ -21,13 +21,12 @@ export default function LoginScreen() {
 
   const handleEnter = async () => {
     try {
-      await handleSignUp();
+      await signUpWithEmail(email, password);
       router.replace('/PetManagementScreen')
     } catch (error) {
-      handleLogin();
+      await loginWithEmail(email, password);
       router.replace('/Swiper');
-      // Alert.alert('Login Error', (error as Error).message);
-
+       Alert.alert('Login Error', (error as Error).message);
     }
   };
 
@@ -36,7 +35,7 @@ export default function LoginScreen() {
       await signUpWithEmail(email, password);
       router.replace('/PetManagementScreen');
     } catch (error) {
-      console.log('Sign Up Error', (error as Error).message);
+      Alert.alert('Sign Up Error', (error as Error).message);
     }
   };
 
