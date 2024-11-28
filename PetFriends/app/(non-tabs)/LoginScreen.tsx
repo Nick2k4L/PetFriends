@@ -87,6 +87,7 @@ export default function LoginScreen() {
       <Button title="Sign Up" onPress={handleSignUp} />
 </View>
       </KeyboardAvoidingView>
+      <Text style={styles.footer}>© 2024 S.P.I.N. Limited</Text>
     </View>
   );
 }
@@ -125,5 +126,9 @@ const styles = StyleSheet.create({
     // color: '#0a0a0a',  
     backgroundColor:'#b7d0cd',
     
+  },
+  footer: {
+    bottom: -10,
+    color: 'grey'
   }
 });
