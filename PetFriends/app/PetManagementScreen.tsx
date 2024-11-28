@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { savePet, fetchPets, uploadPetImage } from '../utilities/firebaseAuth';
 import { getAuth } from 'firebase/auth';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function PetManagementScreen() {
   const [petName, setPetName] = useState('');
@@ -45,18 +46,11 @@ export default function PetManagementScreen() {
     const options: ImageLibraryOptions = {
       mediaType: 'photo',
       quality: 1,
-    };
-    
-    launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorMessage) {
-        Alert.alert('ImagePicker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        const uri = response.assets[0].uri;
-        setPetImage(uri);
-      }
     });
+
+    if (!result.canceled) {
+      setPetImage(result.assets[0].uri);
+    }
   };
 
   const addPet = async () => {
