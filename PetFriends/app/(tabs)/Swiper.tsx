@@ -26,8 +26,8 @@ export default function DogSwipeScreen() {
       try {
         const allUsersDogs = await fetchAllPets(); // Fetch pets from all users
         console.log("User Dogs: ", allUsersDogs);
-        //const filteredDogs = allUsersDogs.filter((dog) => dog.id !== userId); // Exclude current user's dogs
-        setDogs(allUsersDogs as Pet[]);
+        const filteredDogs = allUsersDogs.filter((dog) => dog.id !== userId); // Exclude current user's dogs
+        setDogs(filteredDogs as Pet[]);
       } catch (error) {
         console.error("Error fetching dog profiles:", error);
         Alert.alert("Error", "Failed to load dog profiles.");

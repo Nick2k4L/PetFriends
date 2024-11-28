@@ -14,6 +14,7 @@ import { savePet, fetchPets, uploadPetImage } from '../../utilities/firebaseAuth
 import { getAuth } from 'firebase/auth';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
+import { router, useRouter } from 'expo-router';
 
 export default function PetManagementScreen() {
   const [petName, setPetName] = useState('');
@@ -42,11 +43,13 @@ export default function PetManagementScreen() {
     }
   }, [userId]);
 
-  const pickImage = () => {
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo',
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
       quality: 1,
-    }};
+    });
 
     if (!result.canceled) {
       setPetImage(result.assets[0].uri);
@@ -122,7 +125,7 @@ export default function PetManagementScreen() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Weight (e.g., 10kg)"
+        placeholder="Weight (e.g., 10 Pounds)"
         value={petWeight}
         placeholderTextColor="black"
         onChangeText={setPetWeight}
@@ -147,6 +150,10 @@ export default function PetManagementScreen() {
           </View>
         )}
       />
+       {/* Navigate to Pet Swiper */}
+       {pets.length > 0 && (
+          <Button title="Done? Click here!" onPress={() => router.replace('/Swiper')} />
+      )}
     </View>
   );
 }
