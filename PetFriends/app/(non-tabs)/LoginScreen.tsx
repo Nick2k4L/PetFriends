@@ -26,7 +26,7 @@ export default function LoginScreen() {
     } catch (error) {
       handleLogin();
       router.replace('/Swiper');
-      Alert.alert('Login Error', (error as Error).message);
+      // Alert.alert('Login Error', (error as Error).message);
 
     }
   };
@@ -36,7 +36,7 @@ export default function LoginScreen() {
       await signUpWithEmail(email, password);
       router.replace('/PetManagementScreen');
     } catch (error) {
-      Alert.alert('Sign Up Error', (error as Error).message);
+      console.log('Sign Up Error', (error as Error).message);
     }
   };
 
