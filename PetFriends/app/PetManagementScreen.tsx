@@ -46,7 +46,7 @@ export default function PetManagementScreen() {
     const options: ImageLibraryOptions = {
       mediaType: 'photo',
       quality: 1,
-    });
+    }};
 
     if (!result.canceled) {
       setPetImage(result.assets[0].uri);

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Platform } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Marker, Polyline, LatLng } from 'react-native-maps';
 import { getAppleMapKitDirections, MapKitTransit } from 'react-native-apple-mapkit-directions';
 
 export default function App() {
@@ -19,7 +19,7 @@ export default function App() {
     longitude: 30.308611,
   };
   const transitType = MapKitTransit.AUTOMOBILE;
-  const [routeCoordinates, setRouteCoordinates] = React.useState([]);
+  const [routeCoordinates, setRouteCoordinates] = React.useState<LatLng[]>([]);
   const [petStores, setPetStores] = React.useState([
     { latitude: 46.7243579, longitude: -116.9968032, name: 'Pets Are People Too' },
     { latitude: 46.7331588, longitude: -117.0327213, name: 'Petco' },
