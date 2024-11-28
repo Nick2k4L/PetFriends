@@ -1,7 +1,9 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy} from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, reload, signOut } from 'firebase/auth';
+import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { router, useRouter } from 'expo-router';
 
 
 
@@ -28,10 +30,15 @@ console.log("Firebase initialized");
 
 // User authentication
 
-
+// User authentication
 export const signUpWithEmail = async (email: string, password: string) => {
-  try {
+  try{
+    
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    await sendEmailVerification(userCredential.user); // sends an email verification email to the user
+    Alert.alert('Verification email sent. Please check your inbox. Then Press Sign in!'); // will give them an alert 
+    
     console.log("User signed up:", userCredential.user.uid);
     return userCredential.user;
   } catch (error) {
@@ -39,6 +46,46 @@ export const signUpWithEmail = async (email: string, password: string) => {
     throw error;
   }
 };
+
+
+export const loginWithEmail = async (email: string, password: string) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user; // grabbing the user 
+
+    await reload(user); // ensuring we are getting the latest with email verified or not.
+    const petsUserHas = fetchPets(user.uid); // seeing if the user has any pets or not, determines where they go after sign in!
+
+    if(user.emailVerified && (await petsUserHas).length > 0) // checking to see if the user has any pets associated with it!
+    {
+      router.replace('/Swiper'); // So if the email is verified and we have pets we will jump into the swiper screen / default
+    }
+    else if(user.emailVerified && (await petsUserHas).length == 0) // if the email is verified and we have no pets, then we know they are a first time user
+    {
+      router.replace('/PetManagementScreen'); // redirect them into the pet management screen.
+    }
+    else if (!user.emailVerified) // if they have not verified their email.
+    {
+      Alert.alert(
+        'Email Not Verified',
+        'Please verify your email before logging in.',
+        [
+          { text: 'Resend Verification Email', onPress: () => sendEmailVerification(user) }, // resend the notification of course.
+          { text: 'Cancel', style: 'cancel' }
+        ]
+      );
+      // Sign out the user
+      await signOut(auth);
+    }
+
+    console.log("User signed in:", userCredential.user.uid);
+    return userCredential.user;
+  } catch (error) {
+    console.error("Error signing in:", error);
+    throw error;
+  }
+};
+
 
 export const logOut = async () => {
   try{
@@ -52,16 +99,7 @@ export const logOut = async () => {
   }
 }
 
-export const loginWithEmail = async (email: string, password: string) => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    console.log("User signed in:", userCredential.user.uid);
-    return userCredential.user;
-  } catch (error) {
-    console.error("Error signing in:", error);
-    throw error;
-  }
-};
+
 
 // Save pet to Firestore
 export const savePet = async (userId: string, petData: any) => {
