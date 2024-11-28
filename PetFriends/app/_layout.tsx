@@ -1,18 +1,11 @@
-import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './auth/LoginScreen';
-import TabLayout from './(tabs)/_layout';
-import PetManagementScreen from './PetManagementScreen';
+// app/_layout.tsx
+import { Stack } from 'expo-router';
 
-const Stack = createStackNavigator();
-
-export default function Layout() {
+export default function RootLayout() {
   return (
-    <Stack.Navigator initialRouteName="(tabs)" screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="(tabs)" component={TabLayout} />
-      <Stack.Screen name="PetManagement" component={PetManagementScreen} />
-    </Stack.Navigator>
+    <Stack>
+      <Stack.Screen name="(non-tabs)/LoginScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="(non-tabs)/PetManagementScreen" options={{ headerShown: false }} />
+    </Stack>
   );
 }

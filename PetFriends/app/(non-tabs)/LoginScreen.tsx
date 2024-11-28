@@ -1,28 +1,26 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { loginWithEmail, signUpWithEmail } from '../../utilities/firebaseAuth';
-import { useNavigation } from '@react-navigation/native';
-import { deleteUser } from 'firebase/auth';
+import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
-
-  async function handleLogin() {
+  const handleLogin = async () => {
     try {
       await loginWithEmail(email, password);
-      navigation.navigate('(tabs)');
+      router.replace('/Swiper');
     } catch (error) {
       Alert.alert('Login Error', (error as Error).message);
     }
-  }
+  };
 
   const handleSignUp = async () => {
     try {
       await signUpWithEmail(email, password);
-      navigation.navigate('PetManagement');
+      router.replace('/PetManagementScreen');
     } catch (error) {
       Alert.alert('Sign Up Error', (error as Error).message);
     }
@@ -38,21 +36,18 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Email" 
-        placeholderTextColor="grey"
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor= "grey"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
       <Button title="Login" onPress={handleLogin} />
       <Button title="Sign Up" onPress={handleSignUp} />
-      <Text style={styles.forgotPassword}>Forgot Password?</Text>
     </View>
   );
 }
@@ -71,7 +66,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: 23,
+    fontSize: 24,
     marginBottom: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -85,10 +80,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textDecorationColor: '#000000',
   
-  },
-  forgotPassword: {
-    marginTop: 10,
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
+  }
 });

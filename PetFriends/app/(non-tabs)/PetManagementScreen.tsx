@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { savePet, fetchPets, uploadPetImage } from '../utilities/firebaseAuth';
+import { savePet, fetchPets, uploadPetImage } from '../../utilities/firebaseAuth';
 import { getAuth } from 'firebase/auth';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
