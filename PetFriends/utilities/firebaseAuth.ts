@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy} from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 
@@ -37,6 +37,18 @@ export const signUpWithEmail = async (email: string, password: string) => {
     throw error;
   }
 };
+
+export const logOut = async () => {
+  try{
+    await signOut(auth);
+
+    console.log("User signed out.");
+    
+  } catch (error){
+    console.error("Error signing out:", error);
+    console.log("Unable to log out.")
+  }
+}
 
 export const loginWithEmail = async (email: string, password: string) => {
   try {
