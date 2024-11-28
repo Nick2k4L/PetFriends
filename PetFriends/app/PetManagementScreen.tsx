@@ -10,16 +10,25 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { savePet, fetchPets, uploadPetImage } from './firebaseAuth';
+import { savePet, fetchPets, uploadPetImage } from '../utilities/firebaseAuth';
 import { getAuth } from 'firebase/auth';
+import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 
 export default function PetManagementScreen() {
   const [petName, setPetName] = useState('');
   const [petBreed, setPetBreed] = useState('');
   const [petAge, setPetAge] = useState('');
   const [petWeight, setPetWeight] = useState('');
-  const [petImage, setPetImage] = useState('');
-  const [pets, setPets] = useState([]);
+  const [petImage, setPetImage] = useState<string | undefined>(undefined);
+  interface Pet {
+    id: string;
+    name?: string;
+    age?: string;
+    breed?: string;
+    weight?: string;
+    image?: string;
+  }
+  const [pets, setPets] = useState<Pet[]>([]);
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
   const navigation = useNavigation();
@@ -32,40 +41,54 @@ export default function PetManagementScreen() {
     }
   }, [userId]);
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+  const pickImage = () => {
+    const options: ImageLibraryOptions = {
+      mediaType: 'photo',
       quality: 1,
+    };
+    
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorMessage) {
+        Alert.alert('ImagePicker Error: ', response.errorMessage);
+      } else if (response.assets && response.assets.length > 0) {
+        const uri = response.assets[0].uri;
+        setPetImage(uri);
+      }
     });
-
-    if (!result.canceled) {
-      setPetImage(result.uri);
-    }
   };
 
   const addPet = async () => {
+    if (!userId) {
+      Alert.alert('Error', 'User not authenticated.');
+      return;
+    }
     if (!petName || !petBreed || !petAge || !petWeight) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-
+  
     try {
-      let imageUrl = null;
+      let imageUrl: string | undefined = undefined;
       if (petImage) {
         imageUrl = await uploadPetImage(userId, petImage);
       }
-      const petData = { name: petName, breed: petBreed, age: petAge, weight: petWeight, image: imageUrl };
+      const petData = { id: userId, name: petName, age: petAge, breed: petBreed, weight: petWeight, image: imageUrl };
       await savePet(userId, petData);
       setPets([...pets, petData]);
       setPetName('');
+      setPetAge('');
       setPetBreed('');
       setPetWeight('');
       setPetImage('');
       Alert.alert('Success', 'Pet added successfully!');
     } catch (error) {
-      Alert.alert('Error', error.message);
+      if (error instanceof Error) {
+        Alert.alert('Error', error.message);
+      } else {
+        Alert.alert('Error', 'An unexpected error occurred.');
+      }
     }
   };
 
@@ -75,29 +98,24 @@ export default function PetManagementScreen() {
       <TextInput
         style={styles.input}
         placeholder="Pet Name"
-        placeholderTextColor="black"
         value={petName}
         onChangeText={setPetName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Breed"
-        placeholderTextColor="black"
-        value={petBreed}
-        onChangeText={setPetBreed}
-      />
-       <TextInput
-        style={styles.input}
-        placeholder="Age (e.g., years old)"
-        placeholderTextColor="black"
+        placeholder="Age"
         value={petAge}
         onChangeText={setPetAge}
-        keyboardType="numeric"
       />
       <TextInput
         style={styles.input}
-        placeholder="Weight (e.g., 10 pounds)"
-        placeholderTextColor="black"
+        placeholder="Breed"
+        value={petBreed}
+        onChangeText={setPetBreed}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Weight (e.g., 10kg)"
         value={petWeight}
         onChangeText={setPetWeight}
         keyboardType="numeric"
@@ -115,16 +133,11 @@ export default function PetManagementScreen() {
             <View>
               <Text>Name: {item.name}</Text>
               <Text>Breed: {item.breed}</Text>
-              <Text>Age: {item.age + " Years Old"}</Text>
-              <Text>Weight: {item.weight + " Pounds"}</Text>
+              <Text>Weight: {item.weight}</Text>
             </View>
           </View>
         )}
       />
-      {/* Navigate to Pet Swiper */}
-      {pets.length > 0 && (
-          <Button title="Done? Click here!" onPress={() => navigation.navigate('Home')} />
-      )}
     </View>
   );
 }
@@ -133,7 +146,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#ccc',
   },
   title: {
     fontSize: 24,
@@ -141,7 +153,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#ccc',
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,

@@ -14,7 +14,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "assets/utilities/firebaseAuth.ts"  ]
 
   
 }

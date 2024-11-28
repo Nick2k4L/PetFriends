@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
-import { fetchAllPets } from './firebaseAuth'; // Ensure fetchAllPets is fetching data from all users' pets
+import { fetchAllPets } from '../../utilities/firebaseAuth'; // Ensure fetchAllPets is fetching data from all users' pets
 import { getAuth } from 'firebase/auth';
 
 export default function DogSwipeScreen() {
-  const [dogs, setDogs] = useState([]);
+  const [dogs, setDogs] = useState<{ id: string; name: string; age: string; breed: string; weight: string; image: string; }[]>([]);
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
 
@@ -14,7 +14,7 @@ export default function DogSwipeScreen() {
     const fetchDogProfiles = async () => {
       try {
         const allUsersDogs = await fetchAllPets(); // Fetch pets from all users
-        const filteredDogs = allUsersDogs.filter((dog) => dog.userId !== userId); // Exclude current user's dogs
+        const filteredDogs = allUsersDogs.filter((dog) => dog.id !== userId); // Exclude current user's dogs
         setDogs(filteredDogs);
       } catch (error) {
         console.error("Error fetching dog profiles:", error);
@@ -25,13 +25,13 @@ export default function DogSwipeScreen() {
     fetchDogProfiles();
   }, []);
 
-  const handleSwipeRight = (index) => {
+  const handleSwipeRight = (index: number) => {
     const dog = dogs[index];
     console.log("Invited to play:", dog.name);
     Alert.alert("Invite Sent", `You invited ${dog.name} to play!`);
   };
 
-  const handleSwipeLeft = (index) => {
+  const handleSwipeLeft = (index: number) => {
     const dog = dogs[index];
     console.log("Declined:", dog.name);
   };
