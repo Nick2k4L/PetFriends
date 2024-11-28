@@ -8,7 +8,7 @@ import { Tabs } from 'expo-router';
 export default function TabLayout() {
 
   return (
-    <SafeAreaView style={styles.container}>
+
       <Tabs
       // Make the tabs appear at the bottom of the screen and fill the width
       screenOptions={{
@@ -76,7 +76,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-    </SafeAreaView>
   );
 }
 

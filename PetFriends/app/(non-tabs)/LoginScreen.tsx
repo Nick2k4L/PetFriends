@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { loginWithEmail, signUpWithEmail } from '../../utilities/firebaseAuth';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
       await loginWithEmail(email, password);
-      navigation.navigate('(tabs)');
+      router.replace('/Swiper');
     } catch (error) {
       Alert.alert('Login Error', (error as Error).message);
     }
@@ -20,7 +20,7 @@ export default function LoginScreen() {
   const handleSignUp = async () => {
     try {
       await signUpWithEmail(email, password);
-      navigation.navigate('PetManagement');
+      router.replace('/PetManagementScreen');
     } catch (error) {
       Alert.alert('Sign Up Error', (error as Error).message);
     }
