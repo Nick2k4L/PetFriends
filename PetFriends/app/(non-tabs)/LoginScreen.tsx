@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { loginWithEmail, signUpWithEmail} from '../../utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
+import { TextInput } from 'react-native-paper';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -54,24 +55,30 @@ export default function LoginScreen() {
       <Text style={styles.title}>Welcome </Text>
       <TextInput
         style={styles.input}
-        placeholder="Email                " 
+        // placeholder="Email                " 
         value={email}
         onChangeText={setEmail}
         autoComplete='email'
         placeholderTextColor={"#0a0a0a"}
         inputMode='email'
         onSubmitEditing={()=>passwordRef.current.focus()}
+        mode='outlined'
+        label={'Email'}
         
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        // placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
         placeholderTextColor={"#0a0a0a"}
         ref={passwordRef}
         onSubmitEditing={handleEnter}
+        mode='outlined'
+        label='Password'
+        activeUnderlineColor={'transparent'}
+        underlineColor='transparent'
         
       />
 
@@ -109,12 +116,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    width: 200,
-    borderWidth: 1,
-    borderColor: '##b7d0cd',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-    color: '#0a0a0a',    
+    width: 300,
+    // borderWidth: 1,
+    // borderColor: '##b7d0cd',
+    padding: 8,
+    // marginBottom: 10,
+    // borderRadius: 5,
+    // color: '#0a0a0a',  
+    backgroundColor:'#b7d0cd',
+    
   }
 });
