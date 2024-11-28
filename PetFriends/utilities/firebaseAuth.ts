@@ -27,6 +27,22 @@ const storage = getStorage(app);
 console.log("Firebase initialized");
 
 // User authentication
+
+export const returnEmail = async (email: string, password: string) => {
+try {
+  signUpWithEmail(email, password);
+} catch (error) 
+{
+  try{ 
+    loginWithEmail(email, password);
+  } catch (error) {
+    console.error("Error signing in:", error);
+    throw error;
+  }
+  
+}
+}
+
 export const signUpWithEmail = async (email: string, password: string) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -43,7 +59,7 @@ export const logOut = async () => {
     await signOut(auth);
 
     console.log("User signed out.");
-    
+
   } catch (error){
     console.error("Error signing out:", error);
     console.log("Unable to log out.")

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
-import { loginWithEmail, signUpWithEmail } from '../../utilities/firebaseAuth';
+import { loginWithEmail, signUpWithEmail, returnEmail } from '../../utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
@@ -8,9 +8,20 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
+  const passwordRef = useRef(null);
+
   const handleLogin = async () => {
     try {
       await loginWithEmail(email, password);
+      router.replace('/Swiper');
+    } catch (error) {
+      Alert.alert('Login Error', (error as Error).message);
+    }
+  };
+
+  const handleEnter = async () => {
+    try {
+      await returnEmail(email, password);
       router.replace('/Swiper');
     } catch (error) {
       Alert.alert('Login Error', (error as Error).message);
@@ -46,6 +57,7 @@ export default function LoginScreen() {
         onChangeText={setEmail}
         autoComplete='email'
         placeholderTextColor={"#0a0a0a"}
+        onSubmitEditing={()=>passwordRef.current.focus()}
         
       />
       <TextInput
@@ -55,10 +67,15 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
         placeholderTextColor={"#0a0a0a"}
+        ref={passwordRef}
+        onSubmitEditing={handleEnter}
         
       />
+
+<View style={styles.button}>
       <Button title="Login" onPress={handleLogin} />
       <Button title="Sign Up" onPress={handleSignUp} />
+</View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -71,6 +88,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 40,
     backgroundColor: '#b7d0cd', // Background color
+  },
+  button: {
+    flexDirection: 'row', 
+    justifyContent: 'space-around',
   },
   logo: {
     width: 300,
