@@ -28,20 +28,6 @@ console.log("Firebase initialized");
 
 // User authentication
 
-export const returnEmail = async (email: string, password: string) => {
-try {
-  signUpWithEmail(email, password);
-} catch (error) 
-{
-  try{ 
-    loginWithEmail(email, password);
-  } catch (error) {
-    console.error("Error signing in:", error);
-    throw error;
-  }
-  
-}
-}
 
 export const signUpWithEmail = async (email: string, password: string) => {
   try {

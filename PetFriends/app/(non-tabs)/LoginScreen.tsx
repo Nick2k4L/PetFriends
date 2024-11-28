@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
-import { loginWithEmail, signUpWithEmail, returnEmail } from '../../utilities/firebaseAuth';
+import { loginWithEmail, signUpWithEmail} from '../../utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
@@ -21,10 +21,13 @@ export default function LoginScreen() {
 
   const handleEnter = async () => {
     try {
-      await returnEmail(email, password);
-      router.replace('/Swiper');
+      await handleSignUp();
+      router.replace('/PetManagementScreen')
     } catch (error) {
+      handleLogin();
+      router.replace('/Swiper');
       Alert.alert('Login Error', (error as Error).message);
+
     }
   };
 
