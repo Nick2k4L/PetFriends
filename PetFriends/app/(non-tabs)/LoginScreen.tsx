@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { loginWithEmail, signUpWithEmail } from '../../utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
 
@@ -32,12 +32,21 @@ export default function LoginScreen() {
       <Image source={require('../../assets/PF.jpg')} style={styles.logo} />
 
       {/* Login Form */}
+
+      <KeyboardAvoidingView
+      
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.container}>
+        
       <Text style={styles.title}>Welcome </Text>
       <TextInput
         style={styles.input}
-        placeholder="Email" 
+        placeholder="Email                " 
         value={email}
         onChangeText={setEmail}
+        autoComplete='email'
+        placeholderTextColor={"#0a0a0a"}
+        
       />
       <TextInput
         style={styles.input}
@@ -45,9 +54,12 @@ export default function LoginScreen() {
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+        placeholderTextColor={"#0a0a0a"}
+        
       />
       <Button title="Login" onPress={handleLogin} />
       <Button title="Sign Up" onPress={handleSignUp} />
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -57,13 +69,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 40,
     backgroundColor: '#b7d0cd', // Background color
   },
   logo: {
     width: 300,
     height: 250,
     marginBottom: 20,
+    marginTop: 20
   },
   title: {
     fontSize: 24,
@@ -72,13 +85,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    width: '100%',
+    width: 200,
     borderWidth: 1,
-    borderColor: '#000000',
+    borderColor: '##b7d0cd',
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
-    textDecorationColor: '#000000',
-  
+    color: '#0a0a0a',    
   }
 });
