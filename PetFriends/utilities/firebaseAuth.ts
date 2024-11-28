@@ -1,7 +1,9 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, getDocs, query } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy} from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+
 
 // Firebase configuration
 const firebaseConfig = {
@@ -18,6 +20,8 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+
+
 
 // Log initialization
 console.log("Firebase initialized");
@@ -74,33 +78,18 @@ export const fetchPets = async (userId: string) => {
 
 // Fetch all pets (for swiper functionality)
 export const fetchAllPets = async () => {
-    console.log("Returning dummy data...");
-    return [
-      {
-        id: "1",
-        name: "Buddy",
-        age: "1 year",
-        breed: "Golden Retriever",
-        weight: "25lbs",
-        image: "https://dogtime.com/wp-content/uploads/sites/12/2024/03/GettyImages-1285465107-e1710251441662.jpg",
-      },
-      {
-        id: "2",
-        name: "Max",
-        age: "2 years",
-        breed: "Labrador",
-        weight: "30lbs",
-        image: "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGFicmFkb3IlMjByZXRyaWV2ZXJ8ZW58MHx8MHx8fDA%3D",
-      },
-      {
-        id: "3",
-        name: "Pluto",
-        age: "6 months",
-        breed: "Black Labrador",
-        weight: "35lbs",
-        image: "https://media.discordapp.net/attachments/1231112157144289320/1307614872967843890/image.jpg?ex=673af2c0&is=6739a140&hm=533f3f7d9795d001f108fc90051cbb3ed22f7a5b75849151ca2ccf723152b2ea&=&width=762&height=1196",
-      },
-    ];
+    try{
+      const petsQuery = query(collectionGroup(db,'pets')); // This will search the database based of of name 
+      const querySnap = await getDocs(petsQuery); // This will execute the query
+      const petsMap = querySnap.docs.map(doc => ({id: doc.id, ...doc.data(),}));
+      console.log("Fetched all pets: ", petsMap);
+      return petsMap
+    }
+    catch (error){
+      console.error("Error fetching pets: ", error);
+      throw error;
+    }
+    
   };
   
 

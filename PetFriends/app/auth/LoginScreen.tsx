@@ -2,20 +2,22 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { loginWithEmail, signUpWithEmail } from '../../utilities/firebaseAuth';
 import { useNavigation } from '@react-navigation/native';
+import { deleteUser } from 'firebase/auth';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation<any>();
 
-  const handleLogin = async () => {
+
+  async function handleLogin() {
     try {
       await loginWithEmail(email, password);
       navigation.navigate('(tabs)');
     } catch (error) {
       Alert.alert('Login Error', (error as Error).message);
     }
-  };
+  }
 
   const handleSignUp = async () => {
     try {

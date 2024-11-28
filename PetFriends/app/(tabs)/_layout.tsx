@@ -5,12 +5,7 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Tabs } from 'expo-router';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './LoginScreen';
-import PetManagementScreen from './PetManagementScreen';
-import Swiper from './Swiper';
-import Home from './index'
-import MapView from './MapView'
-import HomeScreen from './index';
+import Swiper from './Swiper';;
 const Stack = createStackNavigator();
 
 export default function TabLayout() {
@@ -94,14 +89,4 @@ const styles = StyleSheet.create({
   }
 });
 
-    <Stack.Navigator initialRouteName="Login" screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="PetManagement" component={PetManagementScreen} />
-      <Stack.Screen name="DogSwiper" component={Swiper} />
-      <Stack.Screen name="Map" component={MapView} />
-    </Stack.Navigator>
-  );
-}
+  

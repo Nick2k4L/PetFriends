@@ -75,8 +75,17 @@ export default function PetManagementScreen() {
         imageUrl = await uploadPetImage(userId, petImage);
       }
       const petData = { id: userId, name: petName, age: petAge, breed: petBreed, weight: petWeight, image: imageUrl };
-      await savePet(userId, petData);
-      setPets([...pets, petData]);
+      const petData1 = { id: userId, name: petName, age: petAge, breed: petBreed, weight: petWeight};
+      if(imageUrl)
+      {
+        await savePet(userId, petData);
+        setPets([...pets, petData]);
+      }
+      else
+      {
+        await savePet(userId, petData1);
+        setPets([...pets, petData1]);
+      }
       setPetName('');
       setPetAge('');
       setPetBreed('');
@@ -97,26 +106,31 @@ export default function PetManagementScreen() {
       <Text style={styles.title}>Add a Pet</Text>
       <TextInput
         style={styles.input}
+        placeholderTextColor="black"
         placeholder="Pet Name"
         value={petName}
         onChangeText={setPetName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Age"
-        value={petAge}
-        onChangeText={setPetAge}
-      />
-      <TextInput
-        style={styles.input}
         placeholder="Breed"
+        placeholderTextColor="black"
         value={petBreed}
         onChangeText={setPetBreed}
+      />
+       <TextInput
+        style={styles.input}
+        placeholder="Age (Years old)"
+        placeholderTextColor="black"
+        value={petAge}
+        keyboardType="numeric"
+        onChangeText={setPetAge}
       />
       <TextInput
         style={styles.input}
         placeholder="Weight (e.g., 10kg)"
         value={petWeight}
+        placeholderTextColor="black"
         onChangeText={setPetWeight}
         keyboardType="numeric"
       />
@@ -133,7 +147,8 @@ export default function PetManagementScreen() {
             <View>
               <Text>Name: {item.name}</Text>
               <Text>Breed: {item.breed}</Text>
-              <Text>Weight: {item.weight}</Text>
+              <Text>Age: {item.age + " Years Old"}</Text>
+              <Text>Weight: {item.weight + " Pounds"}</Text>
             </View>
           </View>
         )}

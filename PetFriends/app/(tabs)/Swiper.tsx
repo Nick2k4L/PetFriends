@@ -4,8 +4,19 @@ import Swiper from 'react-native-deck-swiper';
 import { fetchAllPets } from '../../utilities/firebaseAuth'; // Ensure fetchAllPets is fetching data from all users' pets
 import { getAuth } from 'firebase/auth';
 
+// Define a TypeScript interface for Pet
+interface Pet {
+  id: string;
+  name: string;
+  age: string;
+  breed: string;
+  weight: string;
+  image: string;
+}
+
 export default function DogSwipeScreen() {
-  const [dogs, setDogs] = useState<{ id: string; name: string; age: string; breed: string; weight: string; image: string; }[]>([]);
+   const [dogs, setDogs] = useState<Pet[]>([]);
+  //const [dogs, setDogs] =  useState([]);
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
 
@@ -14,8 +25,9 @@ export default function DogSwipeScreen() {
     const fetchDogProfiles = async () => {
       try {
         const allUsersDogs = await fetchAllPets(); // Fetch pets from all users
-        const filteredDogs = allUsersDogs.filter((dog) => dog.id !== userId); // Exclude current user's dogs
-        setDogs(filteredDogs);
+        console.log("User Dogs: ", allUsersDogs);
+        //const filteredDogs = allUsersDogs.filter((dog) => dog.id !== userId); // Exclude current user's dogs
+        setDogs(allUsersDogs as Pet[]);
       } catch (error) {
         console.error("Error fetching dog profiles:", error);
         Alert.alert("Error", "Failed to load dog profiles.");
