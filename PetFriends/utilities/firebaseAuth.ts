@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy, where, getDoc, addDoc, Timestamp, QuerySnapshot} from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy, where, getDoc, addDoc, Timestamp, QuerySnapshot, deleteDoc} from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, reload, signOut } from 'firebase/auth';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -108,7 +108,28 @@ export const logOut = async () => {
   }
 }
 
+export const removePet = async (userId : string, petName: string) =>
+{
+  try {
+    // 1. Get a reference to the collection of pets for the user
+    const petsRef = collection(db, `users/${userId}/pets`);
 
+    // 2. Query the collection to find the pet with the matching name
+    const querySnapshot = await getDocs(query(petsRef, where("name", "==", petName)));
+
+    // 3. If a pet with the matching name is found, delete it
+    if (!querySnapshot.empty) {
+      const petDoc = querySnapshot.docs[0];
+      await deleteDoc(petDoc.ref);
+      console.log("Pet Deleted:", petName);
+    } else {
+      console.log("No pet found with name:", petName);
+    }
+  } catch (error) {
+    console.error("Error deleting Pet:", error);
+    throw error;
+  }
+}
 
 // Save pet to Firestore
 export const savePet = async (userId: string, petData: any) => {

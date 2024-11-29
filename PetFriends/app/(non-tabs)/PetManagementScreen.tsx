@@ -10,7 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { savePet, fetchPets, uploadPetImage } from '../../utilities/firebaseAuth';
+import { savePet, fetchPets, uploadPetImage, removePet } from '../../utilities/firebaseAuth';
 import { getAuth } from 'firebase/auth';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -33,6 +33,7 @@ export default function PetManagementScreen() {
   const [pets, setPets] = useState<Pet[]>([]);
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
+  const user = auth.currentUser;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -65,6 +66,13 @@ export default function PetManagementScreen() {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
+    
+    // Checking to see if our pet already exists, some looks at all elements in the array and turns to true if any match
+    const petExists = pets.some((pet) => pet.name?.toLowerCase() === petName.toLowerCase());
+    if (petExists) {
+    Alert.alert('Error', 'A pet with this name already exists. Please choose a different name.');
+    return;
+  }
   
     try {
       let imageUrl: string | undefined = undefined;
@@ -98,12 +106,55 @@ export default function PetManagementScreen() {
     }
   };
 
+  // this will handle removal of a pet
+  const removePets = async() =>
+  {
+    Alert.prompt( // prompting the user for removal of a pet
+      'Remove Pet',
+      'Enter the name of the pet you want to remove:', // text for the prompt
+      [
+        {
+          text: 'Cancel', // cancel button
+          style: 'cancel',
+        },
+        {
+          text: 'Remove', // our remove button
+          onPress: (input) => { // grabs the input
+            if (input) {
+              // This will find the petdata based on an existing pet so we can then remove it from our database
+              const existingPet = pets.find((pet) => pet.name?.toLowerCase() === input.toLowerCase());
+              if(existingPet)
+              {
+                try {
+                   removePet(userId as string, existingPet.name as string);
+                   
+
+                  Alert.alert('Success', 'Pet removed successfully!');
+                  router.replace('/PetManagementScreen') // I do this so the page refreshes.
+                } catch (error) {
+                  Alert.alert('Error', 'Failed to remove pet.');
+                }
+              } else {
+                Alert.alert('Error', 'Could not find a pet with that name.');
+              }
+            
+              
+            } else {
+              Alert.alert('Error', 'You must enter a valid pet name.'); // grabs the error.
+            }
+          },
+        },
+      ],
+      'plain-text'
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add a Pet</Text>
       <TextInput
         style={styles.input}
-        placeholderTextColor="black"
+        placeholderTextColor="grey"
         placeholder="Pet Name"
         value={petName}
         onChangeText={setPetName}
@@ -111,14 +162,14 @@ export default function PetManagementScreen() {
       <TextInput
         style={styles.input}
         placeholder="Breed"
-        placeholderTextColor="black"
+        placeholderTextColor="grey"
         value={petBreed}
         onChangeText={setPetBreed}
       />
        <TextInput
         style={styles.input}
         placeholder="Age (Years old)"
-        placeholderTextColor="black"
+        placeholderTextColor="grey"
         value={petAge}
         keyboardType="numeric"
         onChangeText={setPetAge}
@@ -127,13 +178,17 @@ export default function PetManagementScreen() {
         style={styles.input}
         placeholder="Weight (e.g., 10 Pounds)"
         value={petWeight}
-        placeholderTextColor="black"
+        placeholderTextColor="grey"
         onChangeText={setPetWeight}
         keyboardType="numeric"
       />
       <Button title="Select Image (Optional)" onPress={pickImage} />
       {petImage ? <Image source={{ uri: petImage }} style={styles.imagePreview} /> : null}
+      
       <Button title="Add Pet" onPress={addPet} />
+      {pets.length > 0 && ( // user needs a pet to even do removal, hence this check right here.
+          <Button title="Remove a Pet?" onPress={removePets} /> // So users can remove pets, calls removePet to do the removal for us. 
+      )}
       <Text style={styles.subtitle}>Your Pets</Text>
       <FlatList
         data={pets}
@@ -195,3 +250,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
+function refreshPage() {
+  throw new Error('Function not implemented.');
+}
+
