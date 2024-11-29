@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert, SafeAreaView } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { fetchAllPets } from '../../utilities/firebaseAuth'; // Ensure fetchAllPets is fetching data from all users' pets
 import { getAuth } from 'firebase/auth';
@@ -37,40 +37,46 @@ export default function DogSwipeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      {dogs.length > 0 ? (
-        <Swiper
-          cards={dogs}
-          renderCard={(dog) => (
-            <View style={styles.card}>
-              <Image source={{ uri: dog.image }} style={styles.image} />
-              <Text style={styles.name}>{dog.name}</Text>
-              <Text style={styles.breed}>{dog.breed}</Text>
-              <Text style={styles.weight}>Weight: {dog.weight}</Text>
-            </View>
-          )}
-          onSwipedRight={(cardIndex) => handleSwipeRight(cardIndex)}
-          onSwipedLeft={(cardIndex) => handleSwipeLeft(cardIndex)}
-          cardIndex={0}
-          backgroundColor="#f8f9fa"
-          stackSize={3}
-        />
-      ) : (
-        <Text style={styles.noDogsText}>No dogs available right now!</Text>
-      )}
-    </View>
+    <SafeAreaView>
+      <View>
+        {dogs.length > 0 ? (
+          <Swiper
+            cards={dogs}
+            renderCard={(dog) => (
+              <View style={styles.card}>
+                <Image source={{ uri: dog.image }} style={styles.image} />
+                <Text style={styles.name}>{dog.name}</Text>
+                <Text style={styles.breed}>{dog.breed}</Text>
+                <Text style={styles.weight}>Weight: {dog.weight}</Text>
+              </View>
+            )}
+            onSwipedRight={(cardIndex) => handleSwipeRight(cardIndex)}
+            onSwipedLeft={(cardIndex) => handleSwipeLeft(cardIndex)}
+            cardIndex={0}
+            backgroundColor="#f8f9fa"
+            stackSize={3}
+            containerStyle={styles.container}
+          />
+        ) : (
+          <Text style={styles.noDogsText}>No dogs available right now!</Text>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: '#f8f9fa',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'transparent',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: '21%',
-    paddingBottom: '21%',
-    marginTop: 0,
+    marginBottom: '15%',
+    paddingBottom: 50,
+    
   },
   card: {
     flex: 1,
@@ -86,6 +92,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     marginTop: -25,
+    maxHeight: '90%',
   },
   image: {
     width: '90%',

@@ -1,8 +1,8 @@
 import { StyleSheet, SafeAreaView, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
@@ -43,7 +43,7 @@ export default function TabLayout() {
   
           tabBarIcon: ({ color }) => (
 
-            <Fontisto name="paw" size={32} color={color}/>
+            <Fontisto name="paw" size={32} color={color} />
             
           ),
         }}
@@ -53,7 +53,7 @@ export default function TabLayout() {
         options={{
           title: 'Map',
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="map-marker-alt" size={32} color={color} />
+            <FontAwesome6 name="map-location-dot" size={32} color={color} />
           ),
         }}
       />
@@ -62,7 +62,7 @@ export default function TabLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart" size={32} color={color} />
+            <MaterialCommunityIcons name="message-draw" size={32} color={color} />
           ),
         }}
       />
@@ -78,10 +78,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  }
-});
-
