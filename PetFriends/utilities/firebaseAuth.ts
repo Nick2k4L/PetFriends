@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy} from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy, where, getDoc, addDoc, Timestamp, QuerySnapshot} from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -20,6 +20,15 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+
+interface Notification {
+  id: string;          // Firestore document ID
+  userId: string;      // ID of the user this notification belongs to
+  message: string;     // Notification message
+  timestamp: Date;     // Notification timestamp
+  seen: boolean;       // Whether the notification has been seen
+}
+
 
 
 
@@ -68,7 +77,7 @@ export const savePet = async (userId: string, petData: any) => {
   try {
     const petsRef = collection(db, `users/${userId}/pets`);
     const petDoc = doc(petsRef); // Generate a new document
-    await setDoc(petDoc, petData);
+    await setDoc(petDoc, { ...petData, ownerId: userId });
     console.log("Pet saved:", petData);
   } catch (error) {
     console.error("Error saving pet:", error);
@@ -130,3 +139,89 @@ export const uploadPetImage = async (userId: string, fileUri: string) => {
     throw error;
   }
 };
+
+// Save swipe to Firestore
+export const saveSwipe = async (
+  swiperId: string,
+  swipedPetId: string,
+  swipedPetOwnerId: string
+) => {
+  try {
+    await addDoc(collection(db, 'swipes'), {
+      swiperId,
+      swipedPetId,
+      swipedPetOwnerId,
+      timestamp: Timestamp.now(),
+    });
+    console.log("Swipe saved:", { swiperId, swipedPetId, swipedPetOwnerId });
+  } catch (error) {
+    console.error("Error saving swipe:", error);
+    throw error;
+  }
+};
+
+// Check for mutual swipe
+export const checkForMutualSwipe = async (
+  currentUserId: string,
+  swipedPetId: string
+) => {
+  try {
+    const mutualSwipeQuery = query(
+      collection(db, 'swipes'),
+      where('swiperId', '==', swipedPetId),
+      where('swipedPetId', '==', currentUserId)
+    );
+    const mutualSwipeSnapshot = await getDocs(mutualSwipeQuery);
+
+    return !mutualSwipeSnapshot.empty; // Return true if a mutual swipe exists
+  } catch (error) {
+    console.error("Error checking for mutual swipe:", error);
+    throw error;
+  }
+};
+
+// Add notification for a user
+export const addNotification = async (
+  userId: string,
+  message: string
+) => {
+  try {
+    await addDoc(collection(db, 'notifications'), {
+      userId,
+      message,
+      timestamp: Timestamp.now(),
+      seen: false,
+    });
+    console.log("Notification added for user:", userId);
+  } catch (error) {
+    console.error("Error adding notification:", error);
+    throw error;
+  }
+};
+
+export const fetchNotifications = async (userId: string): Promise<Notification[]> => {
+  try {
+    const notificationsRef = collection(db, 'notifications');
+    const querySnapshot = await getDocs(
+      query(notificationsRef, where('userId', '==', userId), orderBy('timestamp', 'desc'))
+    );
+
+    // Map Firestore documents to the Notification interface
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      // Ensure the data matches the Notification interface
+      return {
+        id: doc.id,
+        userId: data.userId,
+        message: data.message,
+        timestamp: data.timestamp.toDate(), // Convert Firestore Timestamp to JS Date
+        seen: data.seen,
+      } as Notification;
+    });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    throw error;
+  }
+};
+

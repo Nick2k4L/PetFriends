@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { fetchAllPets } from '../../utilities/firebaseAuth'; // Ensure fetchAllPets is fetching data from all users' pets
 import { getAuth } from 'firebase/auth';
+import { saveSwipe, checkForMutualSwipe, addNotification } from '../../utilities/firebaseAuth';
 
 // Define a TypeScript interface for Pet
 interface Pet {
@@ -12,6 +13,7 @@ interface Pet {
   breed: string;
   weight: string;
   image: string;
+  ownerId: string;
 }
 
 export default function DogSwipeScreen() {
@@ -37,12 +39,41 @@ export default function DogSwipeScreen() {
     fetchDogProfiles();
   }, []);
 
-  const handleSwipeRight = (index: number) => {
-    const dog = dogs[index];
-    console.log("Invited to play:", dog.name);
-    Alert.alert("Invite Sent", `You invited ${dog.name} to play!`);
-  };
 
+
+  const handleSwipeRight = async (index: number) => {
+    const dog = dogs[index];
+    const currentUserId = userId; // Your logged-in user's ID
+    const swipedPetOwnerId = dog.ownerId; // Correctly fetching ownerId from the `Pet` object
+  
+    console.log("Invited to play:", dog.name);
+  
+    try {
+      // Save the swipe
+      await saveSwipe(currentUserId, dog.id, swipedPetOwnerId);
+  
+      // Check for mutual swipe
+      const isMutual = await checkForMutualSwipe(currentUserId, dog.id);
+  
+      if (isMutual) {
+        console.log(`It's a match with ${dog.name}!`);
+        await addNotification(
+          currentUserId,
+          `You matched with ${dog.name} for a playdate!`
+        );
+        await addNotification(
+          swipedPetOwnerId,
+          `You matched with a pet owned by ${currentUserId} for a playdate!`
+        );
+        Alert.alert("It's a Match!", `You and ${dog.name} are ready for a playdate!`);
+      } else {
+        Alert.alert("Invite Sent", `You invited ${dog.name} to play!`);
+      }
+    } catch (error) {
+      console.error("Error handling swipe right:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  };
   const handleSwipeLeft = (index: number) => {
     const dog = dogs[index];
     console.log("Declined:", dog.name);
