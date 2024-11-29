@@ -31,7 +31,6 @@ export default function LoginScreen() {
   const handleSignUp = async () => {
     try {
       await signUpWithEmail(email, password);
-      router.replace('/PetManagementScreen');
     } catch (error) {
       Alert.alert('Sign Up Error', (error as Error).message);
     }
