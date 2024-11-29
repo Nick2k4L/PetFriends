@@ -68,7 +68,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   listContent: {
+    flex: 1,
+    alignContent: 'center',
+    justifyContent: 'center',
     paddingBottom: 16,
+    marginTop: 35,
   },
   notificationItem: {
     padding: 16,
@@ -94,6 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     color: '#555',
-    marginTop: 32,
+    marginTop: 350,
   },
 });

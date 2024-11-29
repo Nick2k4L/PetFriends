@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Button, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { logOut } from '@/utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
 
