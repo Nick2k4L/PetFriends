@@ -80,46 +80,40 @@ export default function DogSwipeScreen() {
   };
 
   return (
-    <SafeAreaView>
-      <View>
-        {dogs.length > 0 ? (
-          <Swiper
-            cards={dogs}
-            renderCard={(dog) => (
-              <View style={styles.card}>
-                <Image source={{ uri: dog.image }} style={styles.image} />
-                <Text style={styles.name}>{dog.name}</Text>
-                <Text style={styles.breed}>{dog.breed}</Text>
-                <Text style={styles.weight}>Weight: {dog.weight}</Text>
-              </View>
-            )}
-            onSwipedRight={(cardIndex) => handleSwipeRight(cardIndex)}
-            onSwipedLeft={(cardIndex) => handleSwipeLeft(cardIndex)}
-            cardIndex={0}
-            backgroundColor="#f8f9fa"
-            stackSize={3}
-            containerStyle={styles.container}
-          />
-        ) : (
-          <Text style={styles.noDogsText}>No dogs available right now!</Text>
-        )}
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      {dogs.length > 0 ? (
+        <Swiper
+          cards={dogs}
+          renderCard={(dog) => (
+            <View style={styles.card}>
+              <Image source={{ uri: dog.image }} style={styles.image} />
+              <Text style={styles.name}>{dog.name}</Text>
+              <Text style={styles.breed}>{dog.breed}</Text>
+              <Text style={styles.weight}>Weight: {dog.weight}</Text>
+            </View>
+          )}
+          onSwipedRight={(cardIndex) => handleSwipeRight(cardIndex)}
+          onSwipedLeft={(cardIndex) => handleSwipeLeft(cardIndex)}
+          cardIndex={0}
+          backgroundColor="#f8f9fa"
+          stackSize={3}
+        />
+      ) : (
+        <Text style={styles.noDogsText}>No dogs available right now!</Text>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: '#f8f9fa',
-  },
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: '#f8f9fa',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: '15%',
-    paddingBottom: 50,
-    
+    marginBottom: '21%',
+    paddingBottom: '21%',
+    marginTop: 0,
   },
   card: {
     flex: 1,
@@ -134,8 +128,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    marginTop: -25,
-    maxHeight: '90%',
+    marginTop: 17,
+    maxHeight: '92%',
   },
   image: {
     width: '90%',
