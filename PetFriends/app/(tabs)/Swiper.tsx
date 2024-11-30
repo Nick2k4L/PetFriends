@@ -80,7 +80,7 @@ export default function DogSwipeScreen() {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.safeArea}>
       <View>
         {dogs.length > 0 ? (
           <Swiper
@@ -96,7 +96,7 @@ export default function DogSwipeScreen() {
             onSwipedRight={(cardIndex) => handleSwipeRight(cardIndex)}
             onSwipedLeft={(cardIndex) => handleSwipeLeft(cardIndex)}
             cardIndex={0}
-            backgroundColor="#f8f9fa"
+            
             stackSize={3}
             containerStyle={styles.container}
           />
@@ -110,11 +110,13 @@ export default function DogSwipeScreen() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#E5E5E5',
+    height: '100%',
+    width: '100%',
   },
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: '#E5E5E5',
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginBottom: '15%',
@@ -134,8 +136,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    marginTop: -25,
-    maxHeight: '90%',
+    marginTop: -27,
+    maxHeight: '83%',
   },
   image: {
     width: '90%',

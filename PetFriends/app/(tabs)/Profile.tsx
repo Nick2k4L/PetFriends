@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     position: 'absolute',
+    
     top: 255,
     left: 0,
     right: 0,
@@ -90,11 +91,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', // Evenly space the buttons vertically
     alignItems: 'center',
     width: '265%',
-    paddingVertical: 90,
+    paddingTop: 170,
     position: 'absolute',
-    top: 355,
-    left: -300,
-    right: 0,
   },
   button: {
     width: '40%', // Button width relative to the screen
