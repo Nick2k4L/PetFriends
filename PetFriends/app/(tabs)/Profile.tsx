@@ -38,7 +38,7 @@ export default function ProfileScreen() {
           style={styles.button}
           buttonColor="#333333"
           onPress={() => {
-            // Handle Account Management
+            router.replace('/ProfileManagementScreen');
           }}
         >
           Account Management

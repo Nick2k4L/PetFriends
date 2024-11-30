@@ -2,19 +2,23 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
-  Button,
   StyleSheet,
   Text,
   FlatList,
   Image,
   Alert,
+  Modal,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { savePet, fetchPets, uploadPetImage, removePet } from '../../utilities/firebaseAuth';
 import { getAuth } from 'firebase/auth';
-import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
+import { useRouter } from 'expo-router';
+import { Button } from 'react-native-paper';
+import {
+  savePet,
+  fetchPets,
+  uploadPetImage,
+  removePet,
+} from '../../utilities/firebaseAuth';
 import * as ImagePicker from 'expo-image-picker';
-import { router, useRouter } from 'expo-router';
 
 export default function PetManagementScreen() {
   const [petName, setPetName] = useState('');
@@ -22,6 +26,7 @@ export default function PetManagementScreen() {
   const [petAge, setPetAge] = useState('');
   const [petWeight, setPetWeight] = useState('');
   const [petImage, setPetImage] = useState<string | undefined>(undefined);
+  
   interface Pet {
     id: string;
     name?: string;
@@ -30,11 +35,11 @@ export default function PetManagementScreen() {
     weight?: string;
     image?: string;
   }
+  
   const [pets, setPets] = useState<Pet[]>([]);
   const auth = getAuth();
   const userId = auth.currentUser?.uid;
-  const user = auth.currentUser;
-  const navigation = useNavigation();
+  const router = useRouter();
 
   useEffect(() => {
     if (userId) {
@@ -66,28 +71,43 @@ export default function PetManagementScreen() {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    
-    // Checking to see if our pet already exists, some looks at all elements in the array and turns to true if any match
-    const petExists = pets.some((pet) => pet.name?.toLowerCase() === petName.toLowerCase());
+
+    // Check if pet already exists
+    const petExists = pets.some(
+      (pet) => pet.name?.toLowerCase() === petName.toLowerCase()
+    );
     if (petExists) {
-    Alert.alert('Error', 'A pet with this name already exists. Please choose a different name.');
-    return;
-  }
-  
+      Alert.alert(
+        'Error',
+        'A pet with this name already exists. Please choose a different name.'
+      );
+      return;
+    }
+
     try {
       let imageUrl: string | undefined = undefined;
       if (petImage) {
         imageUrl = await uploadPetImage(userId, petImage);
       }
-      const petData = { id: userId, name: petName, age: petAge, breed: petBreed, weight: petWeight, image: imageUrl };
-      const petData1 = { id: userId, name: petName, age: petAge, breed: petBreed, weight: petWeight};
-      if(imageUrl)
-      {
+      const petData = {
+        id: userId,
+        name: petName,
+        age: petAge,
+        breed: petBreed,
+        weight: petWeight,
+        image: imageUrl,
+      };
+      const petData1 = {
+        id: userId,
+        name: petName,
+        age: petAge,
+        breed: petBreed,
+        weight: petWeight,
+      };
+      if (imageUrl) {
         await savePet(userId, petData);
         setPets([...pets, petData]);
-      }
-      else
-      {
+      } else {
         await savePet(userId, petData1);
         setPets([...pets, petData1]);
       }
@@ -95,7 +115,7 @@ export default function PetManagementScreen() {
       setPetAge('');
       setPetBreed('');
       setPetWeight('');
-      setPetImage('');
+      setPetImage(undefined);
       Alert.alert('Success', 'Pet added successfully!');
     } catch (error) {
       if (error instanceof Error) {
@@ -106,52 +126,52 @@ export default function PetManagementScreen() {
     }
   };
 
-  // this will handle removal of a pet
-  const removePets = async() =>
-  {
-    Alert.prompt( // prompting the user for removal of a pet
+  // Handle removal of a pet
+  const removePets = async () => {
+    Alert.prompt(
       'Remove Pet',
-      'Enter the name of the pet you want to remove:', // text for the prompt
+      'Enter the name of the pet you want to remove:',
       [
         {
-          text: 'Cancel', // cancel button
+          text: 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Remove', // our remove button
-          onPress: (input) => { // grabs the input
+          text: 'Remove',
+          onPress: (input) => {
             if (input) {
-              // This will find the petdata based on an existing pet so we can then remove it from our database
-              const existingPet = pets.find((pet) => pet.name?.toLowerCase() === input.toLowerCase());
-              if(existingPet)
-              {
+              const existingPet = pets.find(
+                (pet) =>
+                  pet.name?.toLowerCase() === input.toLowerCase()
+              );
+              if (existingPet) {
                 try {
-                   removePet(userId as string, existingPet.name as string);
-                   
-
+                  removePet(userId as string, existingPet.name as string);
                   Alert.alert('Success', 'Pet removed successfully!');
-                  router.replace('/PetManagementScreen') // I do this so the page refreshes.
+                  router.replace('/PetManagementScreen');
                 } catch (error) {
                   Alert.alert('Error', 'Failed to remove pet.');
                 }
               } else {
-                Alert.alert('Error', 'Could not find a pet with that name.');
+                Alert.alert(
+                  'Error',
+                  'Could not find a pet with that name.'
+                );
               }
-            
-              
             } else {
-              Alert.alert('Error', 'You must enter a valid pet name.'); // grabs the error.
+              Alert.alert('Error', 'You must enter a valid pet name.');
             }
           },
         },
       ],
       'plain-text'
     );
-  }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add a Pet</Text>
+      <Text style={styles.title}>Pet Manager</Text>
+
       <TextInput
         style={styles.input}
         placeholderTextColor="grey"
@@ -166,7 +186,7 @@ export default function PetManagementScreen() {
         value={petBreed}
         onChangeText={setPetBreed}
       />
-       <TextInput
+      <TextInput
         style={styles.input}
         placeholder="Age (Years old)"
         placeholderTextColor="grey"
@@ -182,12 +202,32 @@ export default function PetManagementScreen() {
         onChangeText={setPetWeight}
         keyboardType="numeric"
       />
-      <Button title="Select Image (Optional)" onPress={pickImage} />
-      {petImage ? <Image source={{ uri: petImage }} style={styles.imagePreview} /> : null}
-      
-      <Button title="Add Pet" onPress={addPet} />
-      {pets.length > 0 && ( // user needs a pet to even do removal, hence this check right here.
-          <Button title="Remove a Pet?" onPress={removePets} /> // So users can remove pets, calls removePet to do the removal for us. 
+      <Button
+        mode="contained"
+        style={styles.button}
+        onPress={pickImage}
+      >
+        Select Image (Optional)
+      </Button>
+      {petImage && (
+        <Image source={{ uri: petImage }} style={styles.imagePreview} />
+      )}
+
+      <Button
+        mode="contained"
+        style={styles.button}
+        onPress={addPet}
+      >
+        Add Pet
+      </Button>
+      {pets.length > 0 && (
+        <Button
+          mode="contained"
+          style={styles.button}
+          onPress={removePets}
+        >
+          Remove a Pet
+        </Button>
       )}
       <Text style={styles.subtitle}>Your Pets</Text>
       <FlatList
@@ -195,19 +235,35 @@ export default function PetManagementScreen() {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.petItem}>
-            {item.image && <Image source={{ uri: item.image }} style={styles.petImage} />}
+            {item.image && (
+              <Image
+                source={{ uri: item.image }}
+                style={styles.petImage}
+              />
+            )}
             <View>
-              <Text>Name: {item.name}</Text>
-              <Text>Breed: {item.breed}</Text>
-              <Text>Age: {item.age + " Years Old"}</Text>
-              <Text>Weight: {item.weight + " Pounds"}</Text>
+              <Text style={styles.petText}>Name: {item.name}</Text>
+              <Text style={styles.petText}>Breed: {item.breed}</Text>
+              <Text style={styles.petText}>
+                Age: {item.age} Years Old
+              </Text>
+              <Text style={styles.petText}>
+                Weight: {item.weight} Pounds
+              </Text>
             </View>
           </View>
         )}
       />
-       {/* Navigate to Pet Swiper */}
-       {pets.length > 0 && (
-          <Button title="Done? Click here!" onPress={() => router.replace('/Swiper')} />
+
+      {/* Navigate to Pet Swiper */}
+      {pets.length > 0 && (
+        <Button
+          mode="contained"
+          style={styles.doneButton}
+          onPress={() => router.replace('/Swiper')}
+        >
+          Done? Click here!
+        </Button>
       )}
     </View>
   );
@@ -217,40 +273,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#E5E5E5', // Consistent background color
   },
   title: {
-    fontSize: 24,
-    marginBottom: 10,
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 40,
+    marginTop: 80,
   },
   input: {
+    height: 50, // Consistent height
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 10,
+    paddingHorizontal: 10,
     borderRadius: 5,
+    backgroundColor: '#fff', // To match UserManagementScreen
+    marginBottom: 15,
+  },
+  button: {
+    borderRadius: 5,
+    height: 50,
+    justifyContent: 'center',
+    marginBottom: 15,
+    backgroundColor: '#333333', // Consistent button color
   },
   imagePreview: {
     width: 100,
     height: 100,
-    marginBottom: 10,
+    marginBottom: 15,
+    alignSelf: 'center',
+    borderRadius: 5,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 24,
+    fontWeight: '600',
     marginTop: 20,
     marginBottom: 10,
+    textAlign: 'center',
   },
   petItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#fff', // To match UserManagementScreen inputs
+    padding: 10,
+    borderRadius: 5,
     marginBottom: 10,
   },
   petImage: {
-    width: 50,
+    width: 60,
+    height: 60,
+    marginRight: 15,
+    borderRadius: 30,
+  },
+  petText: {
+    fontSize: 16,
+    marginBottom: 2,
+  },
+  doneButton: {
+    borderRadius: 5,
     height: 50,
-    marginRight: 10,
+    justifyContent: 'center',
+    marginTop: 20,
+    backgroundColor: '#333333',
   },
 });
-function refreshPage() {
-  throw new Error('Function not implemented.');
-}
-
