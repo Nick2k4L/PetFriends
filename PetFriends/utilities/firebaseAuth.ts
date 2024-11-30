@@ -32,6 +32,79 @@ interface Notification {
 }
 
 
+interface ParkVisit {
+  id?: string;         // Optional ID for the Firestore document
+  latitude: number;    // Latitude of the park
+  longitude: number;   // Longitude of the park
+  duration: number;    // Visit duration in minutes
+  user: string;        // User ID of the visitor
+  timestamp: Date;     // Timestamp of the visit
+}
+
+export const joinPlaydate = async (parkVisitId: string, userId: string): Promise<void> => {
+  try {
+    const parkVisitRef = doc(db, 'parks', parkVisitId); // Use the 'parks' collection
+    const parkVisitSnapshot = await getDoc(parkVisitRef);
+
+    if (parkVisitSnapshot.exists()) {
+      const parkVisitData = parkVisitSnapshot.data();
+      const participants = parkVisitData.participants || [];
+
+      if (!participants.includes(userId)) {
+        await setDoc(
+          parkVisitRef,
+          { participants: [...participants, userId] },
+          { merge: true } // Merge with existing data
+        );
+        console.log('User joined park visit:', parkVisitId);
+        Alert.alert('Success', 'You have joined the playdate!');
+      } else {
+        Alert.alert('Error', 'User already joined this park visit.');
+        console.log('User already joined this park visit.');
+      }
+    } else {
+      throw new Error(`Park visit does not exist: ${parkVisitId}`);
+    }
+  } catch (error) {
+    console.error('Error joining park visit:', error);
+    throw error;
+  }
+};
+
+
+// Fetch all park visits from Firestore
+export const fetchParkVisits = async (): Promise<ParkVisit[]> => {
+  try {
+    const parksRef = collection(db, 'parks');
+    const parksSnapshot = await getDocs(parksRef);
+    const parks = parksSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      timestamp: doc.data().timestamp.toDate(), // Convert Firestore timestamp to JS Date
+    })) as ParkVisit[];
+    console.log('Fetched park visits:', parks);
+    return parks;
+  } catch (error) {
+    console.error('Error fetching park visits:', error);
+    throw error;
+  }
+};
+
+// Add a new park visit to Firestore
+export const addParkVisit = async (visit: ParkVisit): Promise<void> => {
+  try {
+    const parksRef = collection(db, 'parks');
+    await addDoc(parksRef, {
+      ...visit,
+      timestamp: Timestamp.fromDate(new Date(visit.timestamp)), // Convert Date to Firestore Timestamp
+    });
+    console.log('Park visit added:', visit);
+  } catch (error) {
+    console.error('Error adding park visit:', error);
+    throw error;
+  }
+};
+
 
 
 // Log initialization
