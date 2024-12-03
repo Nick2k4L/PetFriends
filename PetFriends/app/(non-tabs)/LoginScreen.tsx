@@ -3,27 +3,49 @@ import { View, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Pla
 import { loginWithEmail, signUpWithEmail} from '../../utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
 import { TextInput } from 'react-native-paper';
+import { FirebaseRecaptcha, FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+import { getApp } from 'firebase/app';
+import { RecaptchaVerifier } from 'firebase/auth';
+
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const passwordRef = useRef(null);
+  const passwordRef = useRef(null)
+
+  const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal>(null);
+
+  const app = getApp();
+  const firebaseConfig = app.options;
+
 
   const handleLogin = async () => {
+    if(!recaptchaVerifier.current){
+      Alert.alert('Error', 'Problem with recapthcaVerifier');
+      return;
+    }
+
     try {
-      await loginWithEmail(email, password);
+      
+      await loginWithEmail(email, password, recaptchaVerifier.current);
     } catch (error) {
       Alert.alert('Login Error', (error as Error).message);
     }
   };
 
   const handleEnter = async () => {
+    if(!recaptchaVerifier.current){
+      Alert.alert('Error', 'Problem with recapthcaVerifier');
+      return;
+    }
+
     try {
       await signUpWithEmail(email, password);
     } catch (error) {
-      await loginWithEmail(email, password);
+      await loginWithEmail(email, password, recaptchaVerifier.current);
       Alert.alert('Login Error', (error as Error).message);
     }
   };
@@ -37,6 +59,14 @@ export default function LoginScreen() {
   };
 
   return (
+    <View style={styles.container}>
+      {/* ReCAPTCHA Verifier */}
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={firebaseConfig} 
+        attemptInvisibleVerification={false} // Set to false for visible reCAPTCHA during testing
+/>
+
     <View style={styles.container}>
       {/* Logo */}
       <Image source={require('../../assets/PF.jpg')} style={styles.logo} />
@@ -84,6 +114,7 @@ export default function LoginScreen() {
 </View>
       </KeyboardAvoidingView>
       <Text style={styles.footer}>© 2024 S.P.I.N. Limited</Text>
+    </View>
     </View>
   );
 }

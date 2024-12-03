@@ -28,7 +28,7 @@ export default function DogSwipeScreen() {
       try {
         const allUsersDogs = await fetchAllPets(); // Fetch pets from all users
         console.log("User Dogs: ", allUsersDogs);
-        const filteredDogs = allUsersDogs.filter((dog) => dog.id !== userId); // Exclude current user's dogs
+        const filteredDogs = allUsersDogs.filter((dog) => dog.id !== userId); // Exclude current user's dogs        
         setDogs(filteredDogs as Pet[]);
       } catch (error) {
         console.error("Error fetching dog profiles:", error);
@@ -50,15 +50,15 @@ export default function DogSwipeScreen() {
   
     try {
       // Save the swipe
-      await saveSwipe(currentUserId, dog.id, swipedPetOwnerId);
+      await saveSwipe(currentUserId as string, dog.id, swipedPetOwnerId);
   
       // Check for mutual swipe
-      const isMutual = await checkForMutualSwipe(currentUserId, dog.id);
+      const isMutual = await checkForMutualSwipe(currentUserId as string, dog.id);
   
       if (isMutual) {
         console.log(`It's a match with ${dog.name}!`);
         await addNotification(
-          currentUserId,
+          currentUserId as string,
           `You matched with ${dog.name} for a playdate!`
         );
         await addNotification(
