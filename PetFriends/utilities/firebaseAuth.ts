@@ -49,36 +49,6 @@ interface ParkVisit {
   timestamp: Date;     // Timestamp of the visit
 }
 
-
-// const [phoneNumber, setPhoneNumber] = useState(""); 
-// const [code, setCode] = useState("");
-// const [confirm, setConfirm] = useState("");
-
-
-
-// export const handleSendCode = async (user: User) {
-//   try {
-//     const result = await signInWithPhoneNumber(auth, user.phoneNumber as string);
-//     Alert.alert('Code Sent', 'Please check your messages...');
-//     return result;
-
-
-
-//   } catch(error) {
-//     Alert.alert('Error', 'Failed to send verification code');
-//   }
-// }
-
-// export const handleConfirmationCode = async(code: string){
-//   try{
-
-//   }catch(error){
-
-//   }
-
-
-// }
-
 const promptForPhoneNumber = () => {
   return new Promise<string>((resolve, reject) => {
     Alert.prompt(
@@ -625,9 +595,5 @@ export const fetchNotifications = async (userId: string): Promise<Notification[]
     throw error;
   }
 };
-
-function getPhoneNumberFromFirestore(uid: any) {
-  throw new Error('Function not implemented.');
-}
 
 
