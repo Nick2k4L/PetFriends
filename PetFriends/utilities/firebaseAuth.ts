@@ -1,9 +1,14 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy, where, getDoc, addDoc, Timestamp, QuerySnapshot, deleteDoc} from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, reload, signOut } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, reload, signOut, multiFactor, RecaptchaVerifier, User, PhoneAuthProvider, PhoneMultiFactorGenerator, PhoneAuthCredential, PhoneMultiFactorAssertion, signInWithPhoneNumber, updatePhoneNumber, ApplicationVerifier, signInWithCredential, getMultiFactorResolver, MultiFactorError, MultiFactorResolver, FactorId, MultiFactorInfo, MultiFactorSession } from 'firebase/auth';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { router, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+//import ReCAPTCHA from 'react-native-recaptcha-v2';
+
+
 
 
 
@@ -40,6 +45,105 @@ interface ParkVisit {
   user: string;        // User ID of the visitor
   timestamp: Date;     // Timestamp of the visit
 }
+
+
+// const [phoneNumber, setPhoneNumber] = useState(""); 
+// const [code, setCode] = useState("");
+// const [confirm, setConfirm] = useState("");
+
+
+
+// export const handleSendCode = async (user: User) {
+//   try {
+//     const result = await signInWithPhoneNumber(auth, user.phoneNumber as string);
+//     Alert.alert('Code Sent', 'Please check your messages...');
+//     return result;
+
+
+
+//   } catch(error) {
+//     Alert.alert('Error', 'Failed to send verification code');
+//   }
+// }
+
+// export const handleConfirmationCode = async(code: string){
+//   try{
+
+//   }catch(error){
+
+//   }
+
+
+// }
+
+const promptForPhoneNumber = () => {
+  return new Promise<string>((resolve, reject) => {
+    Alert.prompt(
+      'Multi-Factor Authentication',
+      'Please input your phone number before continuing',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+          onPress: () => {
+            Alert.alert('Error', 'User cancelled');
+            reject(new Error('User cancelled'));
+          },
+        },
+        {
+          text: 'Submit',
+          onPress: (input) => {
+            if (!input || !/^\+?[0-9]{10,15}$/.test(input)) {
+              Alert.alert('Invalid Input', 'Please enter a valid phone number.');
+              reject(new Error('Invalid phone number'));
+            } else {
+              resolve(input);
+            }
+          },
+        },
+      ],
+      'plain-text',
+      '', // Default value
+      'phone-pad' // Keyboard type
+    );
+  });
+};
+
+
+const promptForVerificationCode = () => {
+  return new Promise<string>((resolve, reject) => {
+    Alert.prompt(
+      'Verification Code',
+      'Please input your verification code',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+          onPress: () => {
+            Alert.alert('Error', 'User cancelled');
+            reject(new Error('User cancelled'));
+          },
+        },
+        {
+          text: 'Submit',
+          onPress: (input) => {
+            if (!input || !/^[0-9]{6}$/.test(input)) {
+              Alert.alert('Invalid Input', 'Please enter a valid 6-digit code.');
+              reject(new Error('Invalid verification code'));
+            } else {
+              resolve(input);
+            }
+          },
+        },
+      ],
+      'plain-text',
+      '', // Default value
+      'number-pad' // Keyboard type
+    );
+  });
+};
+
+
 
 export const joinPlaydate = async (parkVisitId: string, userId: string): Promise<void> => {
   try {
@@ -130,12 +234,112 @@ export const signUpWithEmail = async (email: string, password: string) => {
 };
 
 
-export const loginWithEmail = async (email: string, password: string) => {
+export const loginWithEmail = async (email: string, password: string, recaptchaVerifier: ApplicationVerifier) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user; // grabbing the user 
-
+    const countryCode = '+1';
+    //const verificationCode = '';
+    //user.multiFactor
+    
     await reload(user); // ensuring we are getting the latest with email verified or not.
+
+    const userFactors = multiFactor(user).enrolledFactors; // This checks if the user is enrolled in any factors yet
+    console.log('user factors', userFactors); // tells the console the factors
+
+    if(userFactors.length === 0){ // if the length is zero, then we know they are not enrolled
+     
+
+      // Prompt for phone number
+      const phoneNumber = await promptForPhoneNumber(); // this lets the user dial in a number
+      console.log("Phone number entered:", phoneNumber);
+
+      // Initiate phone verification with multiFactorSession
+      const multiFactorUser = multiFactor(user); // Grabbing the user for MFA
+      const multiFactorSession = await multiFactorUser.getSession(); // Getting the current session
+      console.log("Obtained multiFactorSession:", multiFactorSession);
+
+      const phoneProvider = new PhoneAuthProvider(auth); // new phone provider
+
+      // Create phoneInfoOptions with phoneNumber and session. Bundles them together for us
+      const phoneInfoOptions = {
+        phoneNumber: countryCode + phoneNumber, // Add the US country code for now
+        session: multiFactorSession, // our session
+      };
+
+      let verificationId: string; // ensure that it is a string
+      try {
+        verificationId = await phoneProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier); // verifying the phoneNumber
+        console.log("Verification ID obtained:", verificationId);
+      } catch (verifyError) {
+        console.error("Error during phone number verification:", verifyError);
+        Alert.alert('Verification Error', 'Failed to send verification code. Please try again.');
+        throw verifyError;
+      }
+
+      // Prompt user for verification code
+      const verificationCode = await promptForVerificationCode(); // Ask the user for a verification code
+      console.log("Verification code entered:", verificationCode);
+
+      // Create a PhoneAuthCredential with the code
+      let phoneCredential: PhoneAuthCredential;
+      try {
+        phoneCredential = PhoneAuthProvider.credential(verificationId, verificationCode); // Authenticate that Credential
+        console.log("PhoneAuthCredential created.");
+      } catch (credentialError) {
+        console.error("Error creating PhoneAuthCredential:", credentialError);
+        Alert.alert('Credential Error', 'Failed to create credentials. Please try again.');
+        throw credentialError;
+      }
+
+      // Create a PhoneMultiFactorAssertion
+      let assertion;
+      try {
+        assertion = PhoneMultiFactorGenerator.assertion(phoneCredential); // Crearte the multifactor assertion
+        console.log("PhoneMultiFactorAssertion created.");
+      } catch (assertionError) {
+        console.error("Error creating PhoneMultiFactorAssertion:", assertionError);
+        Alert.alert('Assertion Error', 'Failed to create assertion. Please try again.');
+        throw assertionError;
+      }
+
+      // Enroll the second factor with a display name
+      try {
+        await multiFactorUser.enroll(assertion, "Phone Number"); // enroll the user into 2FA
+        console.log("Phone number enrolled as second factor.");
+        Alert.alert('Success', 'Phone number verified and added as a second factor.');
+        await setDoc(doc(db, 'users', user.uid), {
+          phoneNumber: countryCode + phoneNumber
+        }, { merge: true });
+        console.log("Phone number stored in Firestore.");
+      } catch (enrollError) {
+        console.error("Error during second factor enrollment:", enrollError);
+        Alert.alert('Enrollment Error', 'Failed to enroll phone number as a second factor.');
+        throw enrollError;
+      }
+
+
+    }
+    else
+    {
+      // User is already enrolled in MFA
+      console.log('User has MFA');
+      const phoneProvider = new PhoneAuthProvider(auth); // new phone provider
+      //const phoneNumber = await promptForPhoneNumber();
+      const verificationId = await phoneProvider.verifyPhoneNumber(user.phoneNumber as string, recaptchaVerifier);
+      const verificationCode = await promptForVerificationCode();
+
+      try {
+        const phoneCredential = PhoneAuthProvider.credential(verificationId, verificationCode);
+        await signInWithCredential(auth, phoneCredential);
+        console.log("Signed in with MFA");
+      } catch(error) {
+        console.error("Error signing in with MFA:", error);
+        // Handle error, e.g., display an error message to the user
+      }
+    }
+    
+
     const petsUserHas = fetchPets(user.uid); // seeing if the user has any pets or not, determines where they go after sign in!
 
     if(user.emailVerified && (await petsUserHas).length > 0) // checking to see if the user has any pets associated with it!
@@ -162,8 +366,14 @@ export const loginWithEmail = async (email: string, password: string) => {
 
     console.log("User signed in:", userCredential.user.uid);
     return userCredential.user;
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error);
+    if (error.code === 'auth/multi-factor-auth-required') {
+      // NEED HELP HERE 
+    } 
+    else{
     console.error("Error signing in:", error);
+  }
     throw error;
   }
 };
@@ -356,4 +566,10 @@ export const fetchNotifications = async (userId: string): Promise<Notification[]
     throw error;
   }
 };
+
+function getPhoneNumberFromFirestore(uid: any) {
+  throw new Error('Function not implemented.');
+}
+
+
 
