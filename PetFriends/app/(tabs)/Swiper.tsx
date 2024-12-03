@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: '15%',
-    paddingBottom: 50,
-    
+    marginBottom: '21%',
+    paddingBottom: '21%',
+    marginTop: 0,
   },
   card: {
     flex: 1,

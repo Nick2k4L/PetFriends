@@ -80,4 +80,10 @@ export default function TabLayout() {
       />
     </Tabs>
   );
+<<<<<<< HEAD
 }
+=======
+}
+
+
+>>>>>>> origin/Login-Homepage-Merge
