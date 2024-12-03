@@ -374,57 +374,7 @@ export const loginWithEmail = async (email: string, password: string, recaptchaV
   {
     console.log(error);
     if (error.code === 'auth/multi-factor-auth-required') {
-      // NEED HELP HERE 
-      // const resolver = getMultiFactorResolver(auth, error);
-
-
-      // if(resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID){
-      //   const phoneInfoOptions:PhoneInfoOptions = {
-      //     multiFactorHint: resolver.hints[0],
-      //     session: resolver.session
-      //   };
-      //   // Send SMS verification code
-      //   const phoneAuthProvider = new PhoneAuthProvider(auth);
-
-      //   const verificationId = await phoneAuthProvider
-      //   .verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
-      //   .catch(function (error) {
-      //     alert(`Error verifying phone number. ${error}`);
-      //     throw error;
-      //   });
-
-      //   const code = await promptForVerificationCode();
-      //   console.log(code);
-
-      //   if (verificationId && resolver) {
-      //     console.log("In if statement");
-      //     const cred = PhoneAuthProvider.credential(verificationId, code)
-      //     const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
-      //     console.log(cred)
-          
-      //     // Complete sign-in.
-      //     try{
-      //     const x = await resolver.resolveSignIn(multiFactorAssertion);
-      //     console.log(x);
-          
-      //     }catch(error){
-      //       console.log("Womp womp");
-      //     }
-      //     // await resolver
-      //     //   .resolveSignIn(multiFactorAssertion)
-      //     //   .then(function (userCredential) {
-      //     //     // User successfully signed in with the second factor phone number.
-      //     //   })
-      //     //   .catch(function (error:any) {
-      //     //     console.log("bro we cannot do resolver L");
-      //     //     alert(`Error completing sign in. ${error}`);
-      //     //     throw error;
-      //     //   });
-      //     }
-          
-
-      // }
-
+      
       try {
         const resolver = getMultiFactorResolver(auth, error);
         const phoneHint = resolver.hints.find(hint => hint.factorId === PhoneMultiFactorGenerator.FACTOR_ID);
