@@ -1,6 +1,9 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, collectionGroup, getDocs, query, orderBy, where, getDoc, addDoc, Timestamp, QuerySnapshot, deleteDoc} from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, reload, signOut, multiFactor, RecaptchaVerifier, User, PhoneAuthProvider, PhoneMultiFactorGenerator, PhoneAuthCredential, PhoneMultiFactorAssertion, signInWithPhoneNumber, updatePhoneNumber, ApplicationVerifier, signInWithCredential, getMultiFactorResolver, MultiFactorError, MultiFactorResolver, FactorId, MultiFactorInfo, MultiFactorSession } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, reload, signOut, multiFactor, RecaptchaVerifier, User, PhoneAuthProvider, PhoneMultiFactorGenerator, PhoneAuthCredential, PhoneMultiFactorAssertion, signInWithPhoneNumber, 
+  updatePhoneNumber, ApplicationVerifier, signInWithCredential, getMultiFactorResolver, MultiFactorError, 
+  MultiFactorResolver, FactorId, MultiFactorInfo, MultiFactorSession,
+  PhoneInfoOptions} from 'firebase/auth';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Image } from 'react-native';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { router, useRouter } from 'expo-router';
@@ -260,6 +263,7 @@ export const loginWithEmail = async (email: string, password: string, recaptchaV
       console.log("Obtained multiFactorSession:", multiFactorSession);
 
       const phoneProvider = new PhoneAuthProvider(auth); // new phone provider
+      
 
       // Create phoneInfoOptions with phoneNumber and session. Bundles them together for us
       const phoneInfoOptions = {
@@ -361,20 +365,125 @@ export const loginWithEmail = async (email: string, password: string, recaptchaV
         ]
       );
       // Sign out the user
-      await signOut(auth);
+      await signOut(auth); 
     }
 
     console.log("User signed in:", userCredential.user.uid);
     return userCredential.user;
-  } catch (error: any) {
+  } catch (error: any) 
+  {
     console.log(error);
     if (error.code === 'auth/multi-factor-auth-required') {
       // NEED HELP HERE 
+      // const resolver = getMultiFactorResolver(auth, error);
+
+
+      // if(resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID){
+      //   const phoneInfoOptions:PhoneInfoOptions = {
+      //     multiFactorHint: resolver.hints[0],
+      //     session: resolver.session
+      //   };
+      //   // Send SMS verification code
+      //   const phoneAuthProvider = new PhoneAuthProvider(auth);
+
+      //   const verificationId = await phoneAuthProvider
+      //   .verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
+      //   .catch(function (error) {
+      //     alert(`Error verifying phone number. ${error}`);
+      //     throw error;
+      //   });
+
+      //   const code = await promptForVerificationCode();
+      //   console.log(code);
+
+      //   if (verificationId && resolver) {
+      //     console.log("In if statement");
+      //     const cred = PhoneAuthProvider.credential(verificationId, code)
+      //     const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+      //     console.log(cred)
+          
+      //     // Complete sign-in.
+      //     try{
+      //     const x = await resolver.resolveSignIn(multiFactorAssertion);
+      //     console.log(x);
+          
+      //     }catch(error){
+      //       console.log("Womp womp");
+      //     }
+      //     // await resolver
+      //     //   .resolveSignIn(multiFactorAssertion)
+      //     //   .then(function (userCredential) {
+      //     //     // User successfully signed in with the second factor phone number.
+      //     //   })
+      //     //   .catch(function (error:any) {
+      //     //     console.log("bro we cannot do resolver L");
+      //     //     alert(`Error completing sign in. ${error}`);
+      //     //     throw error;
+      //     //   });
+      //     }
+          
+
+      // }
+
+      try {
+        const resolver = getMultiFactorResolver(auth, error);
+        const phoneHint = resolver.hints.find(hint => hint.factorId === PhoneMultiFactorGenerator.FACTOR_ID);
+
+        if (!phoneHint) {
+          Alert.alert('MFA Error', 'No suitable multi-factor authentication method found.');
+          throw error;
+        }
+
+        const phoneInfoOptions: PhoneInfoOptions = {
+          multiFactorHint: phoneHint,
+          session: resolver.session
+        };
+
+        const phoneAuthProvider = new PhoneAuthProvider(auth);
+
+        const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier);
+        const code = await promptForVerificationCode();
+        console.log("Verification code for MFA:", code);
+
+        if (verificationId) {
+          const cred = PhoneAuthProvider.credential(verificationId, code);
+          const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+          console.log("MultiFactorAssertion created:", multiFactorAssertion);
+
+          // Complete sign-in with the assertion
+          const userCredential = await resolver.resolveSignIn(multiFactorAssertion);
+          console.log("MFA sign-in successful:", userCredential);
+
+          const user = userCredential.user;
+
+          const petsUserHas = fetchPets(user.uid); // seeing if the user has any pets or not, determines where they go after sign in!
+
+
+          if(user.emailVerified && (await petsUserHas).length > 0) // checking to see if the user has any pets associated with it!
+          {
+            router.replace('/Swiper'); // So if the email is verified and we have pets we will jump into the swiper screen / default
+          }
+          else if(user.emailVerified && (await petsUserHas).length == 0) // if the email is verified and we have no pets, then we know they are a first time user
+          {
+            router.replace('/PetManagementScreen'); // redirect them into the pet management screen.
+          }
+
+          // Optionally, you can return the user here
+          return userCredential.user;
+        }
+
+      } catch (mfaError) {
+        console.error("Error completing multi-factor sign-in:", mfaError);
+        Alert.alert('MFA Sign-In Error', 'Failed to complete multi-factor sign-in.');
+        throw mfaError;
+      }
+
     } 
     else{
     console.error("Error signing in:", error);
-  }
+    }
     throw error;
+    console.log("we are in here");
   }
 };
 
@@ -570,6 +679,5 @@ export const fetchNotifications = async (userId: string): Promise<Notification[]
 function getPhoneNumberFromFirestore(uid: any) {
   throw new Error('Function not implemented.');
 }
-
 
 
