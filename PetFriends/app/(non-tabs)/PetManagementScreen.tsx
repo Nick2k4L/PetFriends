@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { useRouter } from 'expo-router';
-import { Button } from 'react-native-paper';
+import { ActivityIndicator, Button } from 'react-native-paper';
 import {
   savePet,
   fetchPets,
@@ -26,6 +26,7 @@ export default function PetManagementScreen() {
   const [petAge, setPetAge] = useState('');
   const [petWeight, setPetWeight] = useState('');
   const [petImage, setPetImage] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
   
   interface Pet {
     id: string;
@@ -85,6 +86,7 @@ export default function PetManagementScreen() {
     }
 
     try {
+      setIsLoading(false);
       let imageUrl: string | undefined = undefined;
       if (petImage) {
         imageUrl = await uploadPetImage(userId, petImage);
@@ -123,6 +125,8 @@ export default function PetManagementScreen() {
       } else {
         Alert.alert('Error', 'An unexpected error occurred.');
       }
+    } finally {
+      setIsLoading(true);
     }
   };
 
@@ -220,6 +224,7 @@ export default function PetManagementScreen() {
       >
         Add Pet
       </Button>
+
       {pets.length > 0 && (
         <Button
           mode="contained"
@@ -265,11 +270,29 @@ export default function PetManagementScreen() {
           Done? Click here!
         </Button>
       )}
+
+      {!isLoading && (
+        <View style={styles.loadingOverlay} pointerEvents="auto">
+          <ActivityIndicator style={styles.loader} size="large" color="#0000ff" />
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '120%',
+    height: '120%',
+  },
+  loader: {
+    marginTop: -80,
+    marginLeft: -17,
+  },
   container: {
     flex: 1,
     padding: 20,

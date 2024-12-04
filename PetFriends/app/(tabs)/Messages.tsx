@@ -12,7 +12,7 @@ interface Notification {
 
 export default function MessagesScreen() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const userId = getAuth().currentUser?.uid;
 
@@ -53,6 +53,7 @@ export default function MessagesScreen() {
           keyExtractor={(item) => item.id}
           renderItem={renderNotification}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
         />
       ) : (
         <Text style={styles.noNotificationsText}>No matches yet!</Text>
