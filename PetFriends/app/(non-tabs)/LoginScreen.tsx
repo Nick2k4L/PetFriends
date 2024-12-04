@@ -3,6 +3,7 @@ import { View, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Pla
 import { loginWithEmail, signUpWithEmail} from '../../utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
 import { TextInput } from 'react-native-paper';
+import { TextInput as RNTextInput } from 'react-native';
 import { FirebaseRecaptcha, FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import { getApp } from 'firebase/app';
 import { RecaptchaVerifier } from 'firebase/auth';
@@ -13,15 +14,20 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-
-  const passwordRef = useRef(null)
-
+  const passwordRef = useRef<RNTextInput>(null)
+  
   const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal>(null);
 
   const app = getApp();
   const firebaseConfig = app.options;
 
-
+  const originalWarn = console.warn;
+  console.warn = (message, ...args) => {
+    if (message.includes('FirebaseRecaptcha: Support for defaultProps')) {
+      return;
+    }
+    originalWarn(message, ...args);
+};
   const handleLogin = async () => {
     if(!recaptchaVerifier.current){
       Alert.alert('Error', 'Problem with recapthcaVerifier');
@@ -43,9 +49,9 @@ export default function LoginScreen() {
     }
 
     try {
-      await signUpWithEmail(email, password);
-    } catch (error) {
       await loginWithEmail(email, password, recaptchaVerifier.current);
+    } catch (error) {
+
       Alert.alert('Login Error', (error as Error).message);
     }
   };
@@ -87,7 +93,7 @@ export default function LoginScreen() {
         autoComplete='email'
         placeholderTextColor={"#0a0a0a"}
         inputMode='email'
-        onSubmitEditing={()=>passwordRef.current.focus()}
+        onSubmitEditing={()=>passwordRef.current?.focus() }
         mode='outlined'
         label={'Email'}
         
