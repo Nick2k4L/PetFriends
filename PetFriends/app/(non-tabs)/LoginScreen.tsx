@@ -150,7 +150,7 @@ export default function LoginScreen() {
       <Button title="Login" color={"white"} onPress={handleLogin} />
 </View>
 <View style={styles.signUpButton}>
-      <Button title="Sign up" color={"white"} onPress={handleLogin} />
+      <Button title="Sign up" color={"white"} onPress={handleSignUp} />
 </View>
       </KeyboardAvoidingView>
       <Text style={styles.footer}>© 2024 S.P.I.N. Limited</Text>
