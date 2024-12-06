@@ -146,9 +146,11 @@ export default function LoginScreen() {
             
           />
 
-<View style={styles.button}>
+<View style={styles.loginButton}>
       <Button title="Login" color={"white"} onPress={handleLogin} />
-      <Button title="Sign Up" color={"white"} onPress={handleSignUp} />
+</View>
+<View style={styles.signUpButton}>
+      <Button title="Sign up" color={"white"} onPress={handleLogin} />
 </View>
       </KeyboardAvoidingView>
       <Text style={styles.footer}>© 2024 S.P.I.N. Limited</Text>
@@ -162,15 +164,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    marginTop: -100,
     // backgroundColor: '#4CAF50', // Background color
   },
-  button: {
-    flexDirection: 'row', 
-    justifyContent: 'space-around',
-    color: 'black',
-
-  
+  loginContainer: {
+    maxWidth: 360,
+    borderRadius: 10,
+    // borderColor: 'black',
+    // borderWidth: 1
+    marginBottom: 80,
+  },
+  loginButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  signUpButton: {
+    
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
   },
   logo: {
     width: 300,
