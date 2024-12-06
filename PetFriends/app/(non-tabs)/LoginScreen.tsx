@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     
   },
   footer: {
-    maxHeight: 10,
+    maxHeight: 15,
     color: 'grey'
   }
 });
