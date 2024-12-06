@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Button, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Button, TouchableOpacity, StyleSheet, Text, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { loginWithEmail, signUpWithEmail} from '../../utilities/firebaseAuth';
 import { useRouter } from 'expo-router';
 import { TextInput } from 'react-native-paper';
@@ -71,56 +71,68 @@ export default function LoginScreen() {
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig} 
         attemptInvisibleVerification={false} // Set to false for visible reCAPTCHA during testing
-/>
-
-    <View style={styles.container}>
-      {/* Logo */}
-      <Image source={require('../../assets/PF.jpg')} style={styles.logo} />
-
-      {/* Login Form */}
-
-      <KeyboardAvoidingView
-      
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.container}>
-        
-      <Text style={styles.title}>Welcome </Text>
-      <TextInput
-        style={styles.input}
-        // placeholder="Email                " 
-        value={email}
-        onChangeText={setEmail}
-        autoComplete='email'
-        placeholderTextColor={"#0a0a0a"}
-        inputMode='email'
-        onSubmitEditing={()=>passwordRef.current?.focus() }
-        mode='outlined'
-        label={'Email'}
-        
-      />
-      <TextInput
-        style={styles.input}
-        // placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        placeholderTextColor={"#0a0a0a"}
-        ref={passwordRef}
-        onSubmitEditing={handleEnter}
-        mode='outlined'
-        label='Password'
-        activeUnderlineColor={'transparent'}
-        underlineColor='transparent'
-        
       />
 
-<View style={styles.button}>
-      <Button title="Login" onPress={handleLogin} />
-      <Button title="Sign Up" onPress={handleSignUp} />
-</View>
-      </KeyboardAvoidingView>
-      <Text style={styles.footer}>© 2024 S.P.I.N. Limited</Text>
-    </View>
+      <View style={styles.container}>
+        {/* Logo */}
+        <Image source={require('../../assets/PF.jpg')} style={styles.logo} />
+
+        {/* Login Form */}
+
+        <KeyboardAvoidingView
+        
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.loginContainer}>
+          
+          <Text style={styles.title}>Sign in</Text>
+          <TextInput
+            style={styles.input}
+            // placeholder="Email                " 
+            value={email}
+            onChangeText={setEmail}
+            autoComplete='email'
+            placeholderTextColor={"#0a0a0a"}
+            inputMode='email'
+            onSubmitEditing={()=>passwordRef.current?.focus() }
+            mode='outlined'
+            label={'Email Address'}
+            
+          />
+          <TextInput
+            style={styles.input}
+            // placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            placeholderTextColor={"#0a0a0a"}
+            ref={passwordRef}
+            onSubmitEditing={handleEnter}
+            mode='outlined'
+            label='Password'
+            activeUnderlineColor={'transparent'}
+            underlineColor='transparent'
+            
+          />
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity 
+              style={styles.loginButton}
+              onPress={handleLogin}
+            >
+            <Text style={styles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
+
+            <View style={styles.signupContainer}>
+              <Text style={styles.signupText}>Don't have an account? </Text>
+              <TouchableOpacity onPress={handleSignUp}>
+                <Text style={styles.signupLink}>Sign Up Here</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+        </KeyboardAvoidingView>
+        <Text style={styles.footer}>© 2024 S.P.I.N. Limited</Text>
+      </View>
     </View>
   );
 }
@@ -132,36 +144,78 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 40,
     backgroundColor: '#b7d0cd', // Background color
+    marginTop: -50,
   },
-  button: {
-    flexDirection: 'row', 
-    justifyContent: 'space-around',
+  loginContainer: {
+    width: '100%',
+    alignItems: 'center',
+    paddingTop: 50,
+    gap: 2,
+  },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  loginButton: {
+    backgroundColor: '#02f4ff',
+    width: 360,
+    padding: 15,
+    borderRadius: 15,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  loginButtonText: {
+    color: '#000',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  signupText: {
+    color: '#000',
+    fontSize: 16,
+  },
+  signupLink: {
+    color: '#02f4ff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   logo: {
     width: 300,
     height: 250,
     marginBottom: 20,
-    marginTop: 20
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     marginBottom: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   input: {
-    width: 300,
+    width: 360,
+    height: 40,
     // borderWidth: 1,
     // borderColor: '##b7d0cd',
     padding: 8,
     // marginBottom: 10,
-    // borderRadius: 5,
+    borderRadius: 100,
     // color: '#0a0a0a',  
-    backgroundColor:'#b7d0cd',
+    backgroundColor:'#f5f5f5',
     
   },
   footer: {
-    bottom: -10,
+    maxHeight: 10,
     color: 'grey'
   }
 });
